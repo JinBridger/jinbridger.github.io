@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>阿桥的个人小窝</title>
+    <link>http://example.org/</link>
+    <description>Recent content on 阿桥的个人小窝</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 04 Dec 2022 13:27:01 +0800</lastBuildDate><atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My First Post</title>
+      <link>http://example.org/docs/my-first-post/</link>
+      <pubDate>Sun, 04 Dec 2022 13:27:01 +0800</pubDate>
+      
+      <guid>http://example.org/docs/my-first-post/</guid>
+      <description>Test Markdown#\[x=\frac{-b&amp;#43;\sqrt{b^2-4ac}}{2a}\]test write at \(x\)\[f(x) = \int_{-\infty}^\infty\hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi\]</description>
+    </item>
+    
+  </channel>
+</rss>
