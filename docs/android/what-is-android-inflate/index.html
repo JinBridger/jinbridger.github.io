@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Android inflate的简单分析#最近学了一些Android开发，但是对于inflate这一概念还是云里雾里不甚理解，每次也都是靠着Android Studio的补全来写。今天就仔细研究一下inflate的原理。
+什么是 inflate#一般而言，inflate的作用是将一个xml对象转换为View对象。在这之前，我想简单的谈一下View是什么。
+我们都知道例如Button, TextView等控件，而View是这些控件的共同基类。它是一种抽象的存在，意为这些控件，同样的还有ViewGroup，也就是控件组，表示一组控件。
+Android 程序运行时，是通过获取View来展示对应的画面的，而我们一般的都是写xml文件，因此需要有一个将xml转换为View的工具，也就是inflate.
+常见的 inflate#举个最简单的例子，一般的，在 Android 开发中，如果启用viewBinding的话，我们刚开始会从下面的代码开始：
+class MainActivity : AppCompatActivity() { private lateinit var binding: ActivityMainBinding override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState) binding = ActivityMainBinding.inflate(layoutInflater) val view = binding.root setContentView(view) } } 那么，什么是 LayoutInflater? inflate方法又是干嘛的？
+LayoutInflater 是什么#LayoutInflater是一个用于将xml布局文件加载为View或者ViewGroup对象的工具，我们可以称之为布局加载器。
+它的作用就是接收一个xml文件，并将对应的xml布局转换为View对象。
+LayoutInflater本身是一个抽象类，不能使用常规的方法获取。对于每个Activity，都有对应自己的LayoutInflater.一般的，获取LayoutInflater的方法是调用Activity的get方法获取。
+一般的，我们都是调用它的inflate方法加载xml布局。
+inflate 方法是什么#通过查阅源码，可以发现inflate方法有以下四个重载：
+inflate(int resource, ViewGroup root) inflate(int resource, ViewGroup root, boolean attachToRoot) inflate(XmlPullParser parser, ViewGroup root) inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) 前两种调用会分别调用后两种重载。系统会将resourceId解析为对应的xml。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Android inflate的简单分析" />
+<meta property="og:description" content="Android inflate的简单分析#最近学了一些Android开发，但是对于inflate这一概念还是云里雾里不甚理解，每次也都是靠着Android Studio的补全来写。今天就仔细研究一下inflate的原理。
+什么是 inflate#一般而言，inflate的作用是将一个xml对象转换为View对象。在这之前，我想简单的谈一下View是什么。
+我们都知道例如Button, TextView等控件，而View是这些控件的共同基类。它是一种抽象的存在，意为这些控件，同样的还有ViewGroup，也就是控件组，表示一组控件。
+Android 程序运行时，是通过获取View来展示对应的画面的，而我们一般的都是写xml文件，因此需要有一个将xml转换为View的工具，也就是inflate.
+常见的 inflate#举个最简单的例子，一般的，在 Android 开发中，如果启用viewBinding的话，我们刚开始会从下面的代码开始：
+class MainActivity : AppCompatActivity() { private lateinit var binding: ActivityMainBinding override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState) binding = ActivityMainBinding.inflate(layoutInflater) val view = binding.root setContentView(view) } } 那么，什么是 LayoutInflater? inflate方法又是干嘛的？
+LayoutInflater 是什么#LayoutInflater是一个用于将xml布局文件加载为View或者ViewGroup对象的工具，我们可以称之为布局加载器。
+它的作用就是接收一个xml文件，并将对应的xml布局转换为View对象。
+LayoutInflater本身是一个抽象类，不能使用常规的方法获取。对于每个Activity，都有对应自己的LayoutInflater.一般的，获取LayoutInflater的方法是调用Activity的get方法获取。
+一般的，我们都是调用它的inflate方法加载xml布局。
+inflate 方法是什么#通过查阅源码，可以发现inflate方法有以下四个重载：
+inflate(int resource, ViewGroup root) inflate(int resource, ViewGroup root, boolean attachToRoot) inflate(XmlPullParser parser, ViewGroup root) inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) 前两种调用会分别调用后两种重载。系统会将resourceId解析为对应的xml。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/docs/android/what-is-android-inflate/" /><meta property="article:section" content="docs" />
+
+
+
+<title>Android inflate的简单分析 | 阿桥的个人小窝</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.4e97d339822e4472392bb39094a6650e892d7e6e96c59ab0e147b28ff870051b.css" integrity="sha256-TpfTOYIuRHI5K7OQlKZlDoktfm6WxZqw4Ueyj/hwBRs=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.66d02acf7f03a83db0c25a624132cba468d1adc02822b918bf710aab6e295249.js" integrity="sha256-ZtAqz38DqD2wwlpiQTLLpGjRrcAoIrkYv3EKq24pUkk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+<link rel="stylesheet" href="/katex/katex.min.css" >
+<script src="/katex/katex.min.js" > </script>
+<script src="/katex/auto-render.min.js" ></script>
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body);
+    });
+</script>
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>阿桥的个人小窝</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Android</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/activity-result-api-crash/" class="">Activity Result API 闪退问题解决</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/what-is-android-inflate/" class="active">Android inflate的简单分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Android inflate的简单分析</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是-inflate">什么是 inflate</a></li>
+    <li><a href="#常见的-inflate">常见的 inflate</a></li>
+    <li><a href="#layoutinflater-是什么">LayoutInflater 是什么</a></li>
+    <li><a href="#inflate-方法是什么">inflate 方法是什么</a></li>
+    <li><a href="#一个简单的例子">一个简单的例子</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="android-inflate的简单分析">
+  Android inflate的简单分析
+  <a class="anchor" href="#android-inflate%e7%9a%84%e7%ae%80%e5%8d%95%e5%88%86%e6%9e%90">#</a>
+</h1>
+<p>最近学了一些Android开发，但是对于inflate这一概念还是云里雾里不甚理解，每次也都是靠着Android Studio的补全来写。今天就仔细研究一下inflate的原理。</p>
+<h2 id="什么是-inflate">
+  什么是 inflate
+  <a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-inflate">#</a>
+</h2>
+<p>一般而言，inflate的作用是将一个xml对象转换为View对象。在这之前，我想简单的谈一下View是什么。</p>
+<p>我们都知道例如Button, TextView等控件，而View是这些控件的共同基类。它是一种抽象的存在，意为这些控件，同样的还有ViewGroup，也就是控件组，表示一组控件。</p>
+<p>Android 程序运行时，是通过获取View来展示对应的画面的，而我们一般的都是写xml文件，因此需要有一个将xml转换为View的工具，也就是inflate.</p>
+<h2 id="常见的-inflate">
+  常见的 inflate
+  <a class="anchor" href="#%e5%b8%b8%e8%a7%81%e7%9a%84-inflate">#</a>
+</h2>
+<p>举个最简单的例子，一般的，在 Android 开发中，如果启用viewBinding的话，我们刚开始会从下面的代码开始：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MainActivity</span> : AppCompatActivity() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">lateinit</span> <span style="color:#66d9ef">var</span> binding: ActivityMainBinding
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onCreate</span>(savedInstanceState: Bundle?) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">super</span>.onCreate(savedInstanceState)
+</span></span><span style="display:flex;"><span>        binding = <span style="color:#a6e22e">ActivityMainBinding</span>.inflate(layoutInflater)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">val</span> view = binding.root
+</span></span><span style="display:flex;"><span>        setContentView(view)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>那么，什么是 LayoutInflater? inflate方法又是干嘛的？</p>
+<h2 id="layoutinflater-是什么">
+  LayoutInflater 是什么
+  <a class="anchor" href="#layoutinflater-%e6%98%af%e4%bb%80%e4%b9%88">#</a>
+</h2>
+<p>LayoutInflater是一个用于将xml布局文件加载为View或者ViewGroup对象的工具，我们可以称之为布局加载器。</p>
+<p>它的作用就是接收一个xml文件，并将对应的xml布局转换为View对象。</p>
+<p>LayoutInflater本身是一个抽象类，不能使用常规的方法获取。对于每个Activity，都有对应自己的LayoutInflater.一般的，获取LayoutInflater的方法是调用Activity的get方法获取。</p>
+<p>一般的，我们都是调用它的inflate方法加载xml布局。</p>
+<h2 id="inflate-方法是什么">
+  inflate 方法是什么
+  <a class="anchor" href="#inflate-%e6%96%b9%e6%b3%95%e6%98%af%e4%bb%80%e4%b9%88">#</a>
+</h2>
+<p>通过查阅源码，可以发现inflate方法有以下四个重载：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>inflate<span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> resource<span style="color:#f92672">,</span> ViewGroup root<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>inflate<span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> resource<span style="color:#f92672">,</span> ViewGroup root<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> attachToRoot<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>inflate<span style="color:#f92672">(</span>XmlPullParser parser<span style="color:#f92672">,</span> ViewGroup root<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>inflate<span style="color:#f92672">(</span>XmlPullParser parser<span style="color:#f92672">,</span> ViewGroup root<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> attachToRoot<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>前两种调用会分别调用后两种重载。系统会将resourceId解析为对应的xml。</p>
+<p>通过查阅资料得知，如果：</p>
+<ul>
+<li>
+<p><strong><code>root != null, attachToRoot == true</code></strong>：传进来的布局会被加载成为一个View并作为子View添加到root中，最终返回root；而且这个布局根节点的android:layout_xxx参数会被解析用来设置View的大小。</p>
+</li>
+<li>
+<p><strong><code>root != null， attachToRoot == false</code></strong>：传进来的布局会被加载成为一个View并直接返回。布局根View的android:layout_xxx属性会被解析成LayoutParams并保留。(root只用来参与生成布局根View的LayoutParams)</p>
+</li>
+<li>
+<p><strong><code>root == null, attachToRoot</code> 未传</strong>：当root为空时，attachToRoot是什么都没有意义，此时传进来的布局会被加载成为一个View并直接返回；布局根View的android:layout_xxx属性会被忽略。</p>
+</li>
+</ul>
+<p>也就是说，下面两种写法是等价的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>layoutInflater.inflate(<span style="color:#a6e22e">R</span>.layout.test_textview, binding.textLayout, <span style="color:#66d9ef">true</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span><span style="color:#66d9ef">val</span> newView = layoutInflater.inflate(<span style="color:#a6e22e">R</span>.layout.test_textview, binding.textLayout, <span style="color:#66d9ef">false</span>)
+</span></span><span style="display:flex;"><span>binding.textLayout.addView(newView)
+</span></span></code></pre></div><h2 id="一个简单的例子">
+  一个简单的例子
+  <a class="anchor" href="#%e4%b8%80%e4%b8%aa%e7%ae%80%e5%8d%95%e7%9a%84%e4%be%8b%e5%ad%90">#</a>
+</h2>
+<p>下面的例子通过调用inflate实现更换RelativeLayout内容：</p>
+<p><strong>MainActivity.kt:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MainActivity</span> : AppCompatActivity() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">lateinit</span> <span style="color:#66d9ef">var</span> binding: ActivityMainBinding
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onCreate</span>(savedInstanceState: Bundle?) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">super</span>.onCreate(savedInstanceState)
+</span></span><span style="display:flex;"><span>        binding = <span style="color:#a6e22e">ActivityMainBinding</span>.inflate(layoutInflater)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">val</span> view = binding.root
+</span></span><span style="display:flex;"><span>        setContentView(view)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        binding.loadButton.setOnClickListener {
+</span></span><span style="display:flex;"><span>            loadView()
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        binding.removeButton.setOnClickListener {
+</span></span><span style="display:flex;"><span>            removeView()
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">loadView</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">val</span> newView = layoutInflater.inflate(<span style="color:#a6e22e">R</span>.layout.test_textview, binding.textLayout, <span style="color:#66d9ef">false</span>)
+</span></span><span style="display:flex;"><span>        binding.textLayout.addView(newView)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// also can written in
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// layoutInflater.inflate(R.layout.test_textview, binding.textLayout, true)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">removeView</span>() {
+</span></span><span style="display:flex;"><span>        binding.textLayout.removeView(findViewById(<span style="color:#a6e22e">R</span>.id.test_textview))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>test_textview.xml:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;TextView</span> <span style="color:#a6e22e">xmlns:android=</span><span style="color:#e6db74">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:id=</span><span style="color:#e6db74">&#34;@+id/test_textview&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:background=</span><span style="color:#e6db74">&#34;#00ff00&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:text=</span><span style="color:#e6db74">&#34;This is test textview.&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:layout_width=</span><span style="color:#e6db74">&#34;match_parent&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:layout_height=</span><span style="color:#e6db74">&#34;match_parent&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/TextView&gt;</span>
+</span></span></code></pre></div><p><strong>activity_main.xml:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;LinearLayout</span> <span style="color:#a6e22e">xmlns:android=</span><span style="color:#e6db74">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:orientation=</span><span style="color:#e6db74">&#34;vertical&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:layout_width=</span><span style="color:#e6db74">&#34;match_parent&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">android:layout_height=</span><span style="color:#e6db74">&#34;match_parent&#34;</span> <span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;Button</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:id=</span><span style="color:#e6db74">&#34;@+id/loadButton&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:text=</span><span style="color:#e6db74">&#34;load&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:layout_width=</span><span style="color:#e6db74">&#34;wrap_content&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:layout_height=</span><span style="color:#e6db74">&#34;wrap_content&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;Button</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:id=</span><span style="color:#e6db74">&#34;@+id/removeButton&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:text=</span><span style="color:#e6db74">&#34;remove&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:layout_width=</span><span style="color:#e6db74">&#34;wrap_content&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:layout_height=</span><span style="color:#e6db74">&#34;wrap_content&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;RelativeLayout</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:id=</span><span style="color:#e6db74">&#34;@+id/textLayout&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:layout_width=</span><span style="color:#e6db74">&#34;300dp&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">android:layout_height=</span><span style="color:#e6db74">&#34;300dp&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/LinearLayout&gt;</span>
+</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是-inflate">什么是 inflate</a></li>
+    <li><a href="#常见的-inflate">常见的 inflate</a></li>
+    <li><a href="#layoutinflater-是什么">LayoutInflater 是什么</a></li>
+    <li><a href="#inflate-方法是什么">inflate 方法是什么</a></li>
+    <li><a href="#一个简单的例子">一个简单的例子</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
