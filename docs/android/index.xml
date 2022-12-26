@@ -1,41 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>阿桥的个人小窝</title>
-    <link>http://example.org/docs/android/</link>
-    <description>Recent content on 阿桥的个人小窝</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language><atom:link href="http://example.org/docs/android/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Activity Result API 闪退问题解决</title>
-      <link>http://example.org/docs/android/activity-result-api-crash/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://example.org/docs/android/activity-result-api-crash/</guid>
-      <description>Activity Result API 闪退问题解决#问题复现#在调用 Activity Result API 的 TakePhotoPreview 方法时会出现闪退问题。
-例如调用摄像头拍摄一张照片并将其加载到 imageView 中：
-package com.example.cameraalbumtest import android.os.Bundle import androidx.activity.result.contract.ActivityResultContracts import androidx.appcompat.app.AppCompatActivity import com.example.cameraalbumtest.databinding.ActivityMainBinding class MainActivity : AppCompatActivity() { private lateinit var binding: ActivityMainBinding private val launcherActivity = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { if (it != null) { binding.imageView.setImageBitmap(it) } } override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState) binding = ActivityMainBinding.inflate(layoutInflater) val view = binding.root setContentView(view) binding.takePhotoButton.setOnClickListener { launcherActivity.launch(null) } } } 闪退原因#查看源文件发现 TakePicturePreview 类中含有如下的方法：</description>
-    </item>
-    
-    <item>
-      <title>Android inflate的简单分析</title>
-      <link>http://example.org/docs/android/what-is-android-inflate/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://example.org/docs/android/what-is-android-inflate/</guid>
-      <description>Android inflate的简单分析#最近学了一些Android开发，但是对于inflate这一概念还是云里雾里不甚理解，每次也都是靠着Android Studio的补全来写。今天就仔细研究一下inflate的原理。
-什么是 inflate#一般而言，inflate的作用是将一个xml对象转换为View对象。在这之前，我想简单的谈一下View是什么。
-我们都知道例如Button, TextView等控件，而View是这些控件的共同基类。它是一种抽象的存在，意为这些控件，同样的还有ViewGroup，也就是控件组，表示一组控件。
-Android 程序运行时，是通过获取View来展示对应的画面的，而我们一般的都是写xml文件，因此需要有一个将xml转换为View的工具，也就是inflate.
-常见的 inflate#举个最简单的例子，一般的，在 Android 开发中，如果启用viewBinding的话，我们刚开始会从下面的代码开始：
-class MainActivity : AppCompatActivity() { private lateinit var binding: ActivityMainBinding override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState) binding = ActivityMainBinding.inflate(layoutInflater) val view = binding.root setContentView(view) } } 那么，什么是 LayoutInflater? inflate方法又是干嘛的？
-LayoutInflater 是什么#LayoutInflater是一个用于将xml布局文件加载为View或者ViewGroup对象的工具，我们可以称之为布局加载器。
-它的作用就是接收一个xml文件，并将对应的xml布局转换为View对象。
-LayoutInflater本身是一个抽象类，不能使用常规的方法获取。对于每个Activity，都有对应自己的LayoutInflater.一般的，获取LayoutInflater的方法是调用Activity的get方法获取。
-一般的，我们都是调用它的inflate方法加载xml布局。
-inflate 方法是什么#通过查阅源码，可以发现inflate方法有以下四个重载：
-inflate(int resource, ViewGroup root) inflate(int resource, ViewGroup root, boolean attachToRoot) inflate(XmlPullParser parser, ViewGroup root) inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) 前两种调用会分别调用后两种重载。系统会将resourceId解析为对应的xml。</description>
-    </item>
-    
-  </channel>
-</rss>
