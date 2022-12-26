@@ -2,11 +2,21 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://example.org/docs/what-is-android-inflate/</loc>
+    <loc>http://example.org/docs/android/activity-result-api-crash/</loc>
+  </url><url>
+    <loc>http://example.org/posts/activity-result-api-crash/</loc>
+  </url><url>
+    <loc>http://example.org/docs/android/what-is-android-inflate/</loc>
+  </url><url>
+    <loc>http://example.org/posts/what-is-android-inflate/</loc>
+  </url><url>
+    <loc>http://example.org/docs/android/</loc>
   </url><url>
     <loc>http://example.org/categories/</loc>
   </url><url>
     <loc>http://example.org/docs/</loc>
+  </url><url>
+    <loc>http://example.org/posts/</loc>
   </url><url>
     <loc>http://example.org/tags/</loc>
   </url><url>
