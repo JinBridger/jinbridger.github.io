@@ -38,6 +38,17 @@ inflate(int resource, ViewGroup root) inflate(int resource, ViewGroup root, bool
     </item>
     
     <item>
+      <title>CUDA 入门笔记</title>
+      <link>http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/cuda-programming-101/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/cuda-programming-101/</guid>
+      <description>本文为北大未名超算队高性能计算入门讲座（二）笔记。讲座录屏地址
+CUDA 入门笔记#为什么选择 GPU ？#快 通用 软件环境 相较于 CPU 来说，GPU 核心数量更多一些，能够容纳的线程数更多一些。更加适合并行的计算。
+CUDA 的 Problem a+b#__global__ void vecAdd(double *a, double *b, double *c, int n) { // Get our global thread ID int id = blockIdx.x * blockDim.x + threadIdx.x; // Make sure we do not go out of bounds if(id &amp;lt; n) c[id] = a[id] + b[id] } __global__ 意味着这是一个 CUDA kernel, 并且这个 kernel 是从 CPU 端调用，GPU 端执行。</description>
+    </item>
+    
+    <item>
       <title>利用 chrono 实现简单的计时器</title>
       <link>http://example.org/docs/cpp11-simple-timer/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
