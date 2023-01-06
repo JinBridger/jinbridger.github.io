@@ -6,5 +6,15 @@
     <description>Recent content in Docs on 阿桥的个人小窝</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language><atom:link href="http://example.org/docs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用 chrono 实现简单的计时器</title>
+      <link>http://example.org/docs/cpp11-simple-timer/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/docs/cpp11-simple-timer/</guid>
+      <description>利用 chrono 实现简单的计时器#通过使用 C++11 的 chrono 库实现简单的计时器，可以精确到毫秒。
+#include &amp;lt;iostream&amp;gt; #include &amp;lt;chrono&amp;gt; // A simple timer using std::chrono::system_clock; using std::chrono::duration_cast; using std::chrono::milliseconds; int main() { // Begin timer auto start = system_clock::now(); for (int i = 1; i &amp;lt; 1000000000; ++i); // End timer auto end = system_clock::now(); // Calculate time in ms auto duration = duration_cast&amp;lt;milliseconds&amp;gt;(end - start); std::cout &amp;lt;&amp;lt; &amp;#34;It takes &amp;#34; &amp;lt;&amp;lt; duration.count() &amp;lt;&amp;lt; &amp;#34; ms&amp;#34;; } </description>
+    </item>
+    
   </channel>
 </rss>
