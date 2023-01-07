@@ -17,5 +17,21 @@ CUDA 入门笔记#为什么选择 GPU ？#快 通用 软件环境 相较于 
 CUDA 的 Problem a+b#__global__ void vecAdd(double *a, double *b, double *c, int n) { // Get our global thread ID int id = blockIdx.x * blockDim.x + threadIdx.x; // Make sure we do not go out of bounds if(id &amp;lt; n) c[id] = a[id] + b[id] } __global__ 意味着这是一个 CUDA kernel, 并且这个 kernel 是从 CPU 端调用，GPU 端执行。</description>
     </item>
     
+    <item>
+      <title>Open MPI 入门笔记</title>
+      <link>http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmpi-programming-101/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmpi-programming-101/</guid>
+      <description>本文为北大未名超算队高性能计算入门讲座（三）笔记。讲座录屏地址
+Open MPI 入门笔记#什么是 MPI？#消息传递接口（ Message Passing Interface，缩写 MPI ）是一个并行计算的应用程序接口（API），常在超级电脑、电脑集群等非共享内存环境程序设计。
+MPI 是一个跨语言的通讯协议，用于编写并行计算机。支持点对点和广播。MPI 是一个信息传递应用程序接口，包括协议和和语义说明，他们指明其如何在各种实现中发挥其特性。MPI的目标是高性能，大规模性，和可移植性。MPI 在今天仍为高性能计算的主要模型。
+MPI 可以大概分为两大类：Open MPI 和 MPICH 及其衍生。
+MPICH 实现的比较全面，但是不支持 InfiniBand 这种比较新的硬件和协议。但是它的衍生品例如 Intel MPI 和 MVAPICH 支持比较新的硬件与协议。
+Open MPI 也实现了 MPI 标准，并且应用广泛。它的进程管理比 MPICH 相对比较好。
+Open MPI 与 OpenMP 是不同的概念。Open MPI 的设计架构#Open MPI 架构如左图所示，主要包括 OMPI, ORTE, OPAL 三层。 OMPI 包括公共的 MPI API 以及后端 MPI 语义以及逻辑。ORTE 不包括 MPI，是一个运行时系统。OPAL 则是 OS 级别的函数调用。
+MCA 架构如右图所示。MCA 使得它可以支持一些更灵活的东西。Framework 类似于接口，而 Component 是 Framework 的实现，一般来说有硬件的制造商来实现。</description>
+    </item>
+    
   </channel>
 </rss>

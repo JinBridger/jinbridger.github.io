@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="本文为北大未名超算队高性能计算入门讲座（三）笔记。讲座录屏地址
+Open MPI 入门笔记#什么是 MPI？#消息传递接口（ Message Passing Interface，缩写 MPI ）是一个并行计算的应用程序接口（API），常在超级电脑、电脑集群等非共享内存环境程序设计。
+MPI 是一个跨语言的通讯协议，用于编写并行计算机。支持点对点和广播。MPI 是一个信息传递应用程序接口，包括协议和和语义说明，他们指明其如何在各种实现中发挥其特性。MPI的目标是高性能，大规模性，和可移植性。MPI 在今天仍为高性能计算的主要模型。
+MPI 可以大概分为两大类：Open MPI 和 MPICH 及其衍生。
+MPICH 实现的比较全面，但是不支持 InfiniBand 这种比较新的硬件和协议。但是它的衍生品例如 Intel MPI 和 MVAPICH 支持比较新的硬件与协议。
+Open MPI 也实现了 MPI 标准，并且应用广泛。它的进程管理比 MPICH 相对比较好。
+Open MPI 与 OpenMP 是不同的概念。Open MPI 的设计架构#Open MPI 架构如左图所示，主要包括 OMPI, ORTE, OPAL 三层。 OMPI 包括公共的 MPI API 以及后端 MPI 语义以及逻辑。ORTE 不包括 MPI，是一个运行时系统。OPAL 则是 OS 级别的函数调用。
+MCA 架构如右图所示。MCA 使得它可以支持一些更灵活的东西。Framework 类似于接口，而 Component 是 Framework 的实现，一般来说有硬件的制造商来实现。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Open MPI 入门笔记" />
+<meta property="og:description" content="本文为北大未名超算队高性能计算入门讲座（三）笔记。讲座录屏地址
+Open MPI 入门笔记#什么是 MPI？#消息传递接口（ Message Passing Interface，缩写 MPI ）是一个并行计算的应用程序接口（API），常在超级电脑、电脑集群等非共享内存环境程序设计。
+MPI 是一个跨语言的通讯协议，用于编写并行计算机。支持点对点和广播。MPI 是一个信息传递应用程序接口，包括协议和和语义说明，他们指明其如何在各种实现中发挥其特性。MPI的目标是高性能，大规模性，和可移植性。MPI 在今天仍为高性能计算的主要模型。
+MPI 可以大概分为两大类：Open MPI 和 MPICH 及其衍生。
+MPICH 实现的比较全面，但是不支持 InfiniBand 这种比较新的硬件和协议。但是它的衍生品例如 Intel MPI 和 MVAPICH 支持比较新的硬件与协议。
+Open MPI 也实现了 MPI 标准，并且应用广泛。它的进程管理比 MPICH 相对比较好。
+Open MPI 与 OpenMP 是不同的概念。Open MPI 的设计架构#Open MPI 架构如左图所示，主要包括 OMPI, ORTE, OPAL 三层。 OMPI 包括公共的 MPI API 以及后端 MPI 语义以及逻辑。ORTE 不包括 MPI，是一个运行时系统。OPAL 则是 OS 级别的函数调用。
+MCA 架构如右图所示。MCA 使得它可以支持一些更灵活的东西。Framework 类似于接口，而 Component 是 Framework 的实现，一般来说有硬件的制造商来实现。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmpi-programming-101/" /><meta property="article:section" content="docs" />
+
+
+
+<title>Open MPI 入门笔记 | 阿桥的个人小窝</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.f0ee9ac0e14809aa373e0490f2f513a77027ba3eb7a84dbdc029304f6ccf0816.css" integrity="sha256-8O6awOFICao3PgSQ8vUTp3Anuj63qE29wCkwT2zPCBY=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.2a0799a1a9512c514379b4aff277630efb4e0d961d5d9d30cfda5491e503bbd9.js" integrity="sha256-KgeZoalRLFFDebSv8ndjDvtODZYdXZ0wz9pUkeUDu9k=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+<link rel="stylesheet" href="/katex/katex.min.css" >
+<script src="/katex/katex.min.js" > </script>
+<script src="/katex/auto-render.min.js" ></script>
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body);
+    });
+</script>
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>阿桥的个人小窝</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/cpp11-simple-timer/" class="">利用 chrono 实现简单的计时器</a>
+  
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Android</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/activity-result-api-crash/" class="">Activity Result API 闪退问题解决</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/what-is-android-inflate/" class="">Android inflate的简单分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>高性能计算笔记</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/cuda-programming-101/" class="">CUDA 入门笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmpi-programming-101/" class="active">Open MPI 入门笔记</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Open MPI 入门笔记</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是-mpi">什么是 MPI？</a></li>
+    <li><a href="#open-mpi-的设计架构">Open MPI 的设计架构</a></li>
+    <li><a href="#open-mpi-的-hello-world">Open MPI 的 Hello, world</a></li>
+    <li><a href="#杂项">杂项</a>
+      <ul>
+        <li><a href="#为什么-mpi-创建代价昂贵的进程而不是线程">为什么 MPI 创建代价昂贵的进程而不是线程？</a></li>
+        <li><a href="#为什么使用-mpicc-编译而不是用-gcc">为什么使用 MPICC 编译而不是用 GCC？</a></li>
+      </ul>
+    </li>
+    <li><a href="#点对点通信-point-to-point">点对点通信 (Point to Point)</a>
+      <ul>
+        <li><a href="#接收与发送">接收与发送</a></li>
+        <li><a href="#简单的例子ping-pong">简单的例子：Ping-Pong</a></li>
+        <li><a href="#死锁">死锁</a></li>
+        <li><a href="#阻塞通信与非阻塞通信">阻塞通信与非阻塞通信</a></li>
+        <li><a href="#简单的例子环形-ping-pong">简单的例子：环形 Ping-Pong</a></li>
+      </ul>
+    </li>
+    <li><a href="#聚合通信-collective-communication">聚合通信 (Collective Communication)</a>
+      <ul>
+        <li><a href="#简单的实例计算质数数量">简单的实例：计算质数数量</a></li>
+      </ul>
+    </li>
+    <li><a href="#更多高级特性">更多高级特性</a></li>
+    <li><a href="#小结">小结</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><p>本文为北大未名超算队高性能计算入门讲座（三）笔记。<a href="https://www.bilibili.com/video/BV13v4y1v7y7">讲座录屏地址</a></p>
+<h1 id="open-mpi-入门笔记">
+  Open MPI 入门笔记
+  <a class="anchor" href="#open-mpi-%e5%85%a5%e9%97%a8%e7%ac%94%e8%ae%b0">#</a>
+</h1>
+<h2 id="什么是-mpi">
+  什么是 MPI？
+  <a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-mpi">#</a>
+</h2>
+<p><strong>消息传递接口</strong>（ Message Passing Interface，缩写 MPI ）是一个并行计算的应用程序接口（API），常在超级电脑、电脑集群等非共享内存环境程序设计。</p>
+<p>MPI 是一个跨语言的通讯协议，用于编写并行计算机。支持点对点和广播。MPI 是一个信息传递应用程序接口，包括协议和和语义说明，他们指明其如何在各种实现中发挥其特性。MPI的目标是高性能，大规模性，和可移植性。MPI 在今天仍为高性能计算的主要模型。</p>
+<p>MPI 可以大概分为两大类：Open MPI 和 MPICH 及其衍生。</p>
+<p>MPICH 实现的比较全面，但是不支持 InfiniBand 这种比较新的硬件和协议。但是它的衍生品例如 Intel MPI 和 MVAPICH 支持比较新的硬件与协议。</p>
+<p>Open MPI 也实现了 MPI 标准，并且应用广泛。它的进程管理比 MPICH 相对比较好。</p>
+<blockquote class="book-hint warning">
+  Open MPI 与 OpenMP 是不同的概念。
+</blockquote>
+
+<h2 id="open-mpi-的设计架构">
+  Open MPI 的设计架构
+  <a class="anchor" href="#open-mpi-%e7%9a%84%e8%ae%be%e8%ae%a1%e6%9e%b6%e6%9e%84">#</a>
+</h2>
+<div align="center">
+	<img src="/image/high-performance-note/openmpi-programming-101/mpi-arch.png" width="100%">
+</div>
+<p>Open MPI 架构如左图所示，主要包括 OMPI, ORTE, OPAL 三层。 OMPI 包括公共的 MPI API 以及后端 MPI 语义以及逻辑。ORTE 不包括 MPI，是一个运行时系统。OPAL 则是 OS 级别的函数调用。</p>
+<p>MCA 架构如右图所示。MCA 使得它可以支持一些更灵活的东西。Framework 类似于接口，而 Component 是 Framework 的实现，一般来说有硬件的制造商来实现。</p>
+<h2 id="open-mpi-的-hello-world">
+  Open MPI 的 Hello, world
+  <a class="anchor" href="#open-mpi-%e7%9a%84-hello-world">#</a>
+</h2>
+<details ><summary>Code</summary>
+  <div class="markdown-inner">
+    <div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;stdio.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;mpi.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>(<span style="color:#ff7b72">int</span> argc, <span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span>argv[]) {
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Init</span>(NULL, NULL);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> world_rank;
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_rank</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>world_rank);
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> world_size;
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_size</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>world_size);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;Process %d of %d: Hello, world!</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>, world_rank, world_size);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Finalize</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+  </div>
+</details>
+
+<p>在这段代码里，有几句比较重要：</p>
+<ul>
+<li><code>MPI_Init(NULL, NULL)</code> 在这一句之前，所有的进程都是完全相互独立的。</li>
+<li><code>MPI_COMM_WORLD</code> 是预定义好的通信器 (Communicator)，通信器是一个包含了进程的集合，同一个通信器里面的进程可以相互通信。</li>
+<li><code>MPI_Comm_rank(MPI_COMM_WORLD, &amp;world_rank)</code> 获取每个进程的在通信器里面的 Rank，也就是编号</li>
+<li><code>MPI_Finalize()</code> 这一句释放掉所有被 MPI 占用的资源。</li>
+</ul>
+<details ><summary>Compile &amp; Run</summary>
+  <div class="markdown-inner">
+    <div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mpicc -o hello hello.c
+</span></span><span style="display:flex;"><span>mpirun -np <span style="color:#a5d6ff">4</span> ./hello
+</span></span></code></pre></div>
+  </div>
+</details>
+
+<details ><summary>Result</summary>
+  <div class="markdown-inner">
+    <pre tabindex="0"><code>Process 0 of 4: Hello, world!
+Process 2 of 4: Hello, world!
+Process 3 of 4: Hello, world!
+Process 1 of 4: Hello, world!
+</code></pre>
+  </div>
+</details>
+
+<p>这里我们是无法控制输出的顺序的。</p>
+<p>MPI 的主要思想是 SPMD (Single Program Multiple Data).</p>
+<h2 id="杂项">
+  杂项
+  <a class="anchor" href="#%e6%9d%82%e9%a1%b9">#</a>
+</h2>
+<h3 id="为什么-mpi-创建代价昂贵的进程而不是线程">
+  为什么 MPI 创建代价昂贵的进程而不是线程？
+  <a class="anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88-mpi-%e5%88%9b%e5%bb%ba%e4%bb%a3%e4%bb%b7%e6%98%82%e8%b4%b5%e7%9a%84%e8%bf%9b%e7%a8%8b%e8%80%8c%e4%b8%8d%e6%98%af%e7%ba%bf%e7%a8%8b">#</a>
+</h3>
+<p>这是为了保证跨节点的一致性。进程在执行过程中拥有独立的内存单元，而多个线程共享内存。可以使用混合的方式实现一个节点部署一个多线程 MPI 进程（使用 OpenMP 和 CUDA）。</p>
+<h3 id="为什么使用-mpicc-编译而不是用-gcc">
+  为什么使用 MPICC 编译而不是用 GCC？
+  <a class="anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%bf%e7%94%a8-mpicc-%e7%bc%96%e8%af%91%e8%80%8c%e4%b8%8d%e6%98%af%e7%94%a8-gcc">#</a>
+</h3>
+<p>实际上 MPICC 的后端还是 GCC。MPICC 只是添加了动态链接库。</p>
+<h2 id="点对点通信-point-to-point">
+  点对点通信 (Point to Point)
+  <a class="anchor" href="#%e7%82%b9%e5%af%b9%e7%82%b9%e9%80%9a%e4%bf%a1-point-to-point">#</a>
+</h2>
+<h3 id="接收与发送">
+  接收与发送
+  <a class="anchor" href="#%e6%8e%a5%e6%94%b6%e4%b8%8e%e5%8f%91%e9%80%81">#</a>
+</h3>
+<ul>
+<li><code>MPI_Send</code> 用来发送信息</li>
+<li><code>MPI_Recv</code> 用来接收信息</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">MPI_Send</span>(<span style="color:#ff7b72">void</span> <span style="color:#ff7b72;font-weight:bold">*</span>buf, <span style="color:#ff7b72">int</span> count, MPI_Datatype datatype, <span style="color:#ff7b72">int</span> dest, <span style="color:#ff7b72">int</span> tag, MPI_Comm comm);
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">MPI_Recv</span>(<span style="color:#ff7b72">void</span> <span style="color:#ff7b72;font-weight:bold">*</span>buf, <span style="color:#ff7b72">int</span> count, MPI_Datatype datatype, <span style="color:#ff7b72">int</span> source, <span style="color:#ff7b72">int</span> tag, MPI_Comm comm, MPI_Status <span style="color:#ff7b72;font-weight:bold">*</span>status);
+</span></span></code></pre></div><details ><summary>参数说明</summary>
+  <div class="markdown-inner">
+    <ul>
+<li><code>buf</code> 内存地址，用于接收/发送消息的存储。</li>
+<li><code>count</code> 传送消息的数量</li>
+<li><code>datatype</code> 传输数据类型，除了 C 自带的类型以外，MPI 还定义了一些类型</li>
+<li><code>dest</code> 接收节点</li>
+<li><code>source</code> 发送节点</li>
+<li><code>tag</code> 信息的标签</li>
+<li><code>comm</code> 通信器</li>
+<li><code>status</code> 接收消息的状态</li>
+</ul>
+
+  </div>
+</details>
+
+<p>传递信息可以看作是一个 Message Envelope.</p>
+<p>值得一提的是，接收消息的长度跟发送消息的长度是可以不同的，但是最好保证接收消息的长度 <strong>大于等于</strong> 发送的长度，以免溢出。</p>
+<h3 id="简单的例子ping-pong">
+  简单的例子：Ping-Pong
+  <a class="anchor" href="#%e7%ae%80%e5%8d%95%e7%9a%84%e4%be%8b%e5%ad%90ping-pong">#</a>
+</h3>
+<details ><summary>Code</summary>
+  <div class="markdown-inner">
+    <div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;stdio.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;mpi.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;stdlib.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>(<span style="color:#ff7b72">int</span> argc, <span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span>argv[]) {
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Init</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>argc, <span style="color:#ff7b72;font-weight:bold">&amp;</span>argv);
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> numP, myId;
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_rank</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>myId);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_size</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>numP);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">if</span>(numP <span style="color:#ff7b72;font-weight:bold">%</span> <span style="color:#a5d6ff">2</span> <span style="color:#ff7b72;font-weight:bold">!=</span> <span style="color:#a5d6ff">0</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff7b72">if</span>(<span style="color:#ff7b72;font-weight:bold">!</span>myId) {
+</span></span><span style="display:flex;"><span>			<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;ERROR: the number of ping-pong processors must be even number!</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>);
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">MPI_Abort</span>(MPI_COMM_WORLD, EXIT_FAILURE);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> partner_id;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> odd <span style="color:#ff7b72;font-weight:bold">=</span> myId <span style="color:#ff7b72;font-weight:bold">&amp;</span> <span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">if</span>(odd) {
+</span></span><span style="display:flex;"><span>		partner_id <span style="color:#ff7b72;font-weight:bold">=</span> myId <span style="color:#ff7b72;font-weight:bold">-</span> <span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>	} <span style="color:#ff7b72">else</span> {
+</span></span><span style="display:flex;"><span>		partner_id <span style="color:#ff7b72;font-weight:bold">=</span> myId <span style="color:#ff7b72;font-weight:bold">+</span> <span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> a, b;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">if</span>(odd <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>) {
+</span></span><span style="display:flex;"><span>		a <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72;font-weight:bold">-</span><span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;Process %d sends token %d to process %d</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>, myId, a, partner_id);
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">MPI_Send</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>a, <span style="color:#a5d6ff">1</span>, MPI_INT, partner_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">MPI_Recv</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>b, <span style="color:#a5d6ff">1</span>, MPI_INT, partner_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;Process %d receives token %d from process %d</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>, myId, b, partner_id);
+</span></span><span style="display:flex;"><span>	} <span style="color:#ff7b72">else</span> {
+</span></span><span style="display:flex;"><span>		a <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">MPI_Recv</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>b, <span style="color:#a5d6ff">1</span>, MPI_INT, partner_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;Process %d receives token %d from process %d</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>, myId, b, partner_id);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;Process %d sends token %d to process %d</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>, myId, a, partner_id);
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">MPI_Send</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>a, <span style="color:#a5d6ff">1</span>, MPI_INT, partner_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Finalize</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+  </div>
+</details>
+
+<details ><summary>Result</summary>
+  <div class="markdown-inner">
+    <pre tabindex="0"><code>Process 2 sends token -1 to process 3
+Process 0 sends token -1 to process 1
+Process 1 receives token -1 from process 0
+Process 1 sends token 1 to process 0
+Process 0 receives token 1 from process 1
+Process 3 receives token -l from process 2
+Process 3 sends token 1 to process 2
+Process 2 receives token 1 from process 3
+</code></pre>
+  </div>
+</details>
+
+<h3 id="死锁">
+  死锁
+  <a class="anchor" href="#%e6%ad%bb%e9%94%81">#</a>
+</h3>
+<p>每个 Send 要确保有对应的 Recv。除此以外，还要注意死锁问题，每个 Recv 都能即使获取到发送的东西。</p>
+<h3 id="阻塞通信与非阻塞通信">
+  阻塞通信与非阻塞通信
+  <a class="anchor" href="#%e9%98%bb%e5%a1%9e%e9%80%9a%e4%bf%a1%e4%b8%8e%e9%9d%9e%e9%98%bb%e5%a1%9e%e9%80%9a%e4%bf%a1">#</a>
+</h3>
+<p>刚才说的是阻塞通信，在发送出去/接收到之前，程序会停止运行。相对的，也存在非阻塞通信。如下：</p>
+<ul>
+<li><code>MPI_ISend</code> 用来发送信息</li>
+<li><code>MPI_IRecv</code> 用来接收信息</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">MPI_ISend</span>(<span style="color:#ff7b72">void</span> <span style="color:#ff7b72;font-weight:bold">*</span>buf, <span style="color:#ff7b72">int</span> count, MPI_Datatype datatype, <span style="color:#ff7b72">int</span> dest, <span style="color:#ff7b72">int</span> tag, MPI_Comm comm, MPI_Request <span style="color:#ff7b72;font-weight:bold">*</span>request);
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">MPI_IRecv</span>(<span style="color:#ff7b72">void</span> <span style="color:#ff7b72;font-weight:bold">*</span>buf, <span style="color:#ff7b72">int</span> count, MPI_Datatype datatype, <span style="color:#ff7b72">int</span> source, <span style="color:#ff7b72">int</span> tag, MPI_Comm comm, MPI_Request <span style="color:#ff7b72;font-weight:bold">*</span>request);
+</span></span></code></pre></div><p><code>request</code> 用于标记通信任务。在使用非阻塞通信传来的数据之前，需要使用 <code>MPI_Wait</code> 确认是否数据已经传入缓冲区。</p>
+<p>非阻塞通信还有如下的控制与测试函数：</p>
+<ul>
+<li><code>MPI_Cancel</code> 用于取消非阻塞通信。</li>
+<li><code>MPI_Test</code> 用于测试非阻塞通信是否已经结束。</li>
+<li><code>MPI_Wait</code> 用于等待非阻塞通信数据。</li>
+</ul>
+<h3 id="简单的例子环形-ping-pong">
+  简单的例子：环形 Ping-Pong
+  <a class="anchor" href="#%e7%ae%80%e5%8d%95%e7%9a%84%e4%be%8b%e5%ad%90%e7%8e%af%e5%bd%a2-ping-pong">#</a>
+</h3>
+<p>跟之前的例子不同，如果我们进行环形的 Ping-Pong 通信，就会产生死锁问题。我们无法确定谁应该先接收，谁应该后接受。所以使用非阻塞通信实现。</p>
+<details ><summary>Code</summary>
+  <div class="markdown-inner">
+    <div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;stdio.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;mpi.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;stdlib.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>(<span style="color:#ff7b72">int</span> argc, <span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span>argv[]) {
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Init</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>argc, <span style="color:#ff7b72;font-weight:bold">&amp;</span>argv);
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> numP, myId;
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_rank</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>myId);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_size</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>numP);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> next_id <span style="color:#ff7b72;font-weight:bold">=</span> (myId <span style="color:#ff7b72;font-weight:bold">+</span> <span style="color:#a5d6ff">1</span>) <span style="color:#ff7b72;font-weight:bold">%</span> numP, prev_id <span style="color:#ff7b72;font-weight:bold">=</span> (myId <span style="color:#ff7b72;font-weight:bold">-</span> <span style="color:#a5d6ff">1</span> <span style="color:#ff7b72;font-weight:bold">+</span> numP) <span style="color:#ff7b72;font-weight:bold">%</span> numP;
+</span></span><span style="display:flex;"><span>	MPI_Request rq_send, rq_recv;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> a <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">1</span>, b;
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Isend</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>a, <span style="color:#a5d6ff">1</span>, MPI_INT, next_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>rq_send);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Irecv</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>b, <span style="color:#a5d6ff">1</span>, MPI_INT, prev_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>rq_recv);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Wait</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>rq_recv, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;%d receive token %d from %d</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span> myId, b, prev_id);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Barrier</span>(MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	a <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72;font-weight:bold">-</span><span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Isend</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>a, <span style="color:#a5d6ff">1</span>, MPI_INT, prev_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>rq_send);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Irecv</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>b, <span style="color:#a5d6ff">1</span>, MPI_INT, next_id, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>rq_recv);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Wait</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>rq_recv, MPI_STATUS_IGNORE);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;%d receive token %d from %d</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span> myId, b, next_id);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Barrier</span>(MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Finalize</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+  </div>
+</details>
+
+<details ><summary>Result</summary>
+  <div class="markdown-inner">
+    <pre tabindex="0"><code>5 receive token 1 from 4
+6 receive token 1 from 5
+4 receive token 1 from 3
+1 receive token 1 from 0
+0 receive token 1 from 6
+2 receive token 1 from 1
+3 receive token 1 from 2
+1 receive token -1 from 2
+4 receive token -1 from 5
+0 receive token -1 from 1
+6 receive token -1 from 0
+5 receive token -1 from 6
+3 receive token -1 from 4
+2 receive token -1 from 3
+</code></pre>
+  </div>
+</details>
+
+<h2 id="聚合通信-collective-communication">
+  聚合通信 (Collective Communication)
+  <a class="anchor" href="#%e8%81%9a%e5%90%88%e9%80%9a%e4%bf%a1-collective-communication">#</a>
+</h2>
+<p>除了点对点通信之外，MPI 还有其他的通信方式如图所示。</p>
+<div align="center">
+	<img src="/image/high-performance-note/openmpi-programming-101/collective-comm.png" width="90%">
+</div>
+<h3 id="简单的实例计算质数数量">
+  简单的实例：计算质数数量
+  <a class="anchor" href="#%e7%ae%80%e5%8d%95%e7%9a%84%e5%ae%9e%e4%be%8b%e8%ae%a1%e7%ae%97%e8%b4%a8%e6%95%b0%e6%95%b0%e9%87%8f">#</a>
+</h3>
+<details ><summary>Code</summary>
+  <div class="markdown-inner">
+    <div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;stdio.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;mpi.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;stdlib.h&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>(<span style="color:#ff7b72">int</span> argc, <span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span>argv[]) {
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Init</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>argc, <span style="color:#ff7b72;font-weight:bold">&amp;</span>argv);
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> numP, myId;
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_rank</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>myId);
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Comm_size</span>(MPI_COMM_WORLD, <span style="color:#ff7b72;font-weight:bold">&amp;</span>numP);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> n <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">atoi</span>(argv[<span style="color:#a5d6ff">1</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Barrier</span>(MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">double</span> start <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">MPI_Wtime</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> myCount <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> total;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> prime;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">for</span>(<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">2</span> <span style="color:#ff7b72;font-weight:bold">+</span> myId; i <span style="color:#ff7b72;font-weight:bold">&lt;=</span> n; i <span style="color:#ff7b72;font-weight:bold">+=</span> numP) {
+</span></span><span style="display:flex;"><span>		prime <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>		<span style="color:#ff7b72">for</span>(<span style="color:#ff7b72">int</span> j <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">2</span>; j <span style="color:#ff7b72;font-weight:bold">&lt;</span> i; <span style="color:#ff7b72;font-weight:bold">++</span>j) {
+</span></span><span style="display:flex;"><span>			<span style="color:#ff7b72">if</span>(i <span style="color:#ff7b72;font-weight:bold">%</span> j <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>) {
+</span></span><span style="display:flex;"><span>				prime <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>;
+</span></span><span style="display:flex;"><span>				<span style="color:#ff7b72">break</span>;
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		myCount <span style="color:#ff7b72;font-weight:bold">+=</span> prime;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Reduce</span>(<span style="color:#ff7b72;font-weight:bold">&amp;</span>myCount, <span style="color:#ff7b72;font-weight:bold">&amp;</span>total, <span style="color:#a5d6ff">1</span>, MPI_INT, MPI_SUM, <span style="color:#a5d6ff">0</span>, MPI_COMM_WORLD);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">double</span> end <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">MPI_Wtime</span>();
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">if</span>(<span style="color:#ff7b72;font-weight:bold">!</span>myId) {
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;%d primes between 1 and %d</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>, total, n);
+</span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;Time with %d processes: %.3lf seconds</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>, numP, end <span style="color:#ff7b72;font-weight:bold">-</span> start);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#d2a8ff;font-weight:bold">MPI_Finalize</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+  </div>
+</details>
+
+<p>MPI_Reduce 中有预定义好的 MPI_Ops 例如 MPI_MAX, MPI_SUM 等等。</p>
+<details ><summary>Result</summary>
+  <div class="markdown-inner">
+    <p><code>mpirun -np 10 ./prime 100000</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#a5d6ff">9592</span> primes between <span style="color:#a5d6ff">1</span> and <span style="color:#a5d6ff">100000</span>
+</span></span><span style="display:flex;"><span>Time with <span style="color:#a5d6ff">10</span> processes: 0.265 seconds
+</span></span></code></pre></div><p><code>mpirun -np 1 ./prime 100000</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#a5d6ff">9592</span> primes between <span style="color:#a5d6ff">1</span> and <span style="color:#a5d6ff">100000</span>
+</span></span><span style="display:flex;"><span>Time with <span style="color:#a5d6ff">1</span> processes: 1.012 seconds
+</span></span></code></pre></div>
+  </div>
+</details>
+
+<p>根据 Amadhl 定律，所用时间并不会是原来的 1/10，而是会大一些。</p>
+<h2 id="更多高级特性">
+  更多高级特性
+  <a class="anchor" href="#%e6%9b%b4%e5%a4%9a%e9%ab%98%e7%ba%a7%e7%89%b9%e6%80%a7">#</a>
+</h2>
+<ul>
+<li>派生的数据类型</li>
+<li>通信器切分</li>
+<li>进程组</li>
+<li>&hellip;</li>
+</ul>
+<h2 id="小结">
+  小结
+  <a class="anchor" href="#%e5%b0%8f%e7%bb%93">#</a>
+</h2>
+<ul>
+<li>MPI 是一个标准的定义，它提供了可移植的接口。它可以进行节点间通信。</li>
+<li>MPI 提供了一个启动器 (launcher) 实现跨节点启动多个进程。</li>
+<li>有两种通信方式：点对点通信与聚合通信。</li>
+<li>点对点通信方式可以分为：阻塞通信跟非阻塞通信。非阻塞操作可以避免死锁，并且实现通信与计算的并行。</li>
+<li><strong>MPI 编程原则：最大化计算操作与通信操作的比例。</strong></li>
+</ul>
+<h2 id="参考">
+  参考
+  <a class="anchor" href="#%e5%8f%82%e8%80%83">#</a>
+</h2>
+<ol>
+<li>杨超, 北京大学课程《并行与分布式计算基础》课件.</li>
+<li>Schmidt B, Gonzalez-Dominguez J, Hundt C, et al. Parallel programming: concepts and practice. Morgan Kaufmann, 2017.</li>
+</ol>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是-mpi">什么是 MPI？</a></li>
+    <li><a href="#open-mpi-的设计架构">Open MPI 的设计架构</a></li>
+    <li><a href="#open-mpi-的-hello-world">Open MPI 的 Hello, world</a></li>
+    <li><a href="#杂项">杂项</a>
+      <ul>
+        <li><a href="#为什么-mpi-创建代价昂贵的进程而不是线程">为什么 MPI 创建代价昂贵的进程而不是线程？</a></li>
+        <li><a href="#为什么使用-mpicc-编译而不是用-gcc">为什么使用 MPICC 编译而不是用 GCC？</a></li>
+      </ul>
+    </li>
+    <li><a href="#点对点通信-point-to-point">点对点通信 (Point to Point)</a>
+      <ul>
+        <li><a href="#接收与发送">接收与发送</a></li>
+        <li><a href="#简单的例子ping-pong">简单的例子：Ping-Pong</a></li>
+        <li><a href="#死锁">死锁</a></li>
+        <li><a href="#阻塞通信与非阻塞通信">阻塞通信与非阻塞通信</a></li>
+        <li><a href="#简单的例子环形-ping-pong">简单的例子：环形 Ping-Pong</a></li>
+      </ul>
+    </li>
+    <li><a href="#聚合通信-collective-communication">聚合通信 (Collective Communication)</a>
+      <ul>
+        <li><a href="#简单的实例计算质数数量">简单的实例：计算质数数量</a></li>
+      </ul>
+    </li>
+    <li><a href="#更多高级特性">更多高级特性</a></li>
+    <li><a href="#小结">小结</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
