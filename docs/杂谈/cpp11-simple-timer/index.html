@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="利用 chrono 实现简单的计时器#通过使用 C&#43;&#43;11 的 chrono 库实现简单的计时器，可以精确到毫秒。
+#include &lt;iostream&gt; #include &lt;chrono&gt; // A simple timer using std::chrono::system_clock; using std::chrono::duration_cast; using std::chrono::milliseconds; int main() { // Begin timer auto start = system_clock::now(); for (int i = 1; i &lt; 1000000000; &#43;&#43;i); // End timer auto end = system_clock::now(); // Calculate time in ms auto duration = duration_cast&lt;milliseconds&gt;(end - start); std::cout &lt;&lt; &#34;It takes &#34; &lt;&lt; duration.count() &lt;&lt; &#34; ms&#34;; } ">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="利用 chrono 实现简单的计时器" />
+<meta property="og:description" content="利用 chrono 实现简单的计时器#通过使用 C&#43;&#43;11 的 chrono 库实现简单的计时器，可以精确到毫秒。
+#include &lt;iostream&gt; #include &lt;chrono&gt; // A simple timer using std::chrono::system_clock; using std::chrono::duration_cast; using std::chrono::milliseconds; int main() { // Begin timer auto start = system_clock::now(); for (int i = 1; i &lt; 1000000000; &#43;&#43;i); // End timer auto end = system_clock::now(); // Calculate time in ms auto duration = duration_cast&lt;milliseconds&gt;(end - start); std::cout &lt;&lt; &#34;It takes &#34; &lt;&lt; duration.count() &lt;&lt; &#34; ms&#34;; } " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/docs/%E6%9D%82%E8%B0%88/cpp11-simple-timer/" /><meta property="article:section" content="docs" />
+
+
+
+<title>利用 chrono 实现简单的计时器 | 阿桥的个人小窝</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.f0ee9ac0e14809aa373e0490f2f513a77027ba3eb7a84dbdc029304f6ccf0816.css" integrity="sha256-8O6awOFICao3PgSQ8vUTp3Anuj63qE29wCkwT2zPCBY=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.1e626493de63231b99ca7fb467e722f79aff39cfb10a630818b863af4366a3e1.js" integrity="sha256-HmJkk95jIxuZyn&#43;0Z&#43;ci95r/Oc&#43;xCmMIGLhjr0Nmo&#43;E=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+<link rel="stylesheet" href="/katex/katex.min.css" >
+<script src="/katex/katex.min.js" > </script>
+<script src="/katex/auto-render.min.js" ></script>
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body);
+    });
+</script>
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>阿桥的个人小窝</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Android</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/activity-result-api-crash/" class="">Activity Result API 闪退问题解决</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/what-is-android-inflate/" class="">Android inflate 的简单分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>杂谈</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%9D%82%E8%B0%88/rm-code-analyze/" class="">RM 算法部分代码逻辑</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%9D%82%E8%B0%88/cpp11-simple-timer/" class="active">利用 chrono 实现简单的计时器</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>高性能计算笔记</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/cuda-programming-101/" class="">CUDA 入门笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmpi-programming-101/" class="">Open MPI 入门笔记</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>利用 chrono 实现简单的计时器</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents"></nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="利用-chrono-实现简单的计时器">
+  利用 chrono 实现简单的计时器
+  <a class="anchor" href="#%e5%88%a9%e7%94%a8-chrono-%e5%ae%9e%e7%8e%b0%e7%ae%80%e5%8d%95%e7%9a%84%e8%ae%a1%e6%97%b6%e5%99%a8">#</a>
+</h1>
+<p>通过使用 C++11 的 <code>chrono</code> 库实现简单的计时器，可以精确到毫秒。</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;iostream&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#include</span> <span style="color:#8b949e;font-weight:bold;font-style:italic">&lt;chrono&gt;</span><span style="color:#8b949e;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// A simple timer
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">using</span> std<span style="color:#ff7b72;font-weight:bold">::</span>chrono<span style="color:#ff7b72;font-weight:bold">::</span>system_clock;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">using</span> std<span style="color:#ff7b72;font-weight:bold">::</span>chrono<span style="color:#ff7b72;font-weight:bold">::</span>duration_cast;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">using</span> std<span style="color:#ff7b72;font-weight:bold">::</span>chrono<span style="color:#ff7b72;font-weight:bold">::</span>milliseconds;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Begin timer
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#ff7b72">auto</span> start <span style="color:#ff7b72;font-weight:bold">=</span> system_clock<span style="color:#ff7b72;font-weight:bold">::</span>now();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">1</span>; i <span style="color:#ff7b72;font-weight:bold">&lt;</span> <span style="color:#a5d6ff">1000000000</span>; <span style="color:#ff7b72;font-weight:bold">++</span>i);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// End timer
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#ff7b72">auto</span> end <span style="color:#ff7b72;font-weight:bold">=</span> system_clock<span style="color:#ff7b72;font-weight:bold">::</span>now();
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Calculate time in ms
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#ff7b72">auto</span> duration <span style="color:#ff7b72;font-weight:bold">=</span> duration_cast<span style="color:#ff7b72;font-weight:bold">&lt;</span>milliseconds<span style="color:#ff7b72;font-weight:bold">&gt;</span>(end <span style="color:#ff7b72;font-weight:bold">-</span> start);
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;It takes &#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> duration.count() <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34; ms&#34;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents"></nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

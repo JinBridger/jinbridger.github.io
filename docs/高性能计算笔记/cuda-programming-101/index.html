@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="本文为北大未名超算队高性能计算入门讲座（二）笔记。讲座录屏地址
-CUDA 入门笔记#为什么选择 GPU ？#快 通用 软件环境 相较于 CPU 来说，GPU 核心数量更多一些，能够容纳的线程数更多一些。更加适合并行的计算。
+<meta name="description" content="本文为北大未名超算队高性能计算入门讲座（二）笔记。讲座录屏地址CUDA 入门笔记#为什么选择 GPU ？#快 通用 软件环境 相较于 CPU 来说，GPU 核心数量更多一些，能够容纳的线程数更多一些。更加适合并行的计算。
 CUDA 的 Problem a&#43;b#__global__ void vecAdd(double *a, double *b, double *c, int n) { // Get our global thread ID int id = blockIdx.x * blockDim.x &#43; threadIdx.x; // Make sure we do not go out of bounds if(id &lt; n) c[id] = a[id] &#43; b[id] } __global__ 意味着这是一个 CUDA kernel, 并且这个 kernel 是从 CPU 端调用，GPU 端执行。">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="CUDA 入门笔记" />
-<meta property="og:description" content="本文为北大未名超算队高性能计算入门讲座（二）笔记。讲座录屏地址
-CUDA 入门笔记#为什么选择 GPU ？#快 通用 软件环境 相较于 CPU 来说，GPU 核心数量更多一些，能够容纳的线程数更多一些。更加适合并行的计算。
+<meta property="og:description" content="本文为北大未名超算队高性能计算入门讲座（二）笔记。讲座录屏地址CUDA 入门笔记#为什么选择 GPU ？#快 通用 软件环境 相较于 CPU 来说，GPU 核心数量更多一些，能够容纳的线程数更多一些。更加适合并行的计算。
 CUDA 的 Problem a&#43;b#__global__ void vecAdd(double *a, double *b, double *c, int n) { // Get our global thread ID int id = blockIdx.x * blockDim.x &#43; threadIdx.x; // Make sure we do not go out of bounds if(id &lt; n) c[id] = a[id] &#43; b[id] } __global__ 意味着这是一个 CUDA kernel, 并且这个 kernel 是从 CPU 端调用，GPU 端执行。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/cuda-programming-101/" /><meta property="article:section" content="docs" />
@@ -21,7 +19,7 @@ CUDA 的 Problem a&#43;b#__global__ void vecAdd(double *a, double *b, double *
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.f0ee9ac0e14809aa373e0490f2f513a77027ba3eb7a84dbdc029304f6ccf0816.css" integrity="sha256-8O6awOFICao3PgSQ8vUTp3Anuj63qE29wCkwT2zPCBY=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.2a0799a1a9512c514379b4aff277630efb4e0d961d5d9d30cfda5491e503bbd9.js" integrity="sha256-KgeZoalRLFFDebSv8ndjDvtODZYdXZ0wz9pUkeUDu9k=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.1e626493de63231b99ca7fb467e722f79aff39cfb10a630818b863af4366a3e1.js" integrity="sha256-HmJkk95jIxuZyn&#43;0Z&#43;ci95r/Oc&#43;xCmMIGLhjr0Nmo&#43;E=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -76,19 +74,6 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     
       
-        <li>
-          
-  
-  
-
-  
-    <a href="/docs/cpp11-simple-timer/" class="">利用 chrono 实现简单的计时器</a>
-  
-
-        </li>
-      
-    
-      
         <li class="book-section-flat" >
           
   
@@ -121,7 +106,51 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/android/what-is-android-inflate/" class="">Android inflate的简单分析</a>
+    <a href="/docs/android/what-is-android-inflate/" class="">Android inflate 的简单分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>杂谈</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%9D%82%E8%B0%88/rm-code-analyze/" class="">RM 算法部分代码逻辑</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%9D%82%E8%B0%88/cpp11-simple-timer/" class="">利用 chrono 实现简单的计时器</a>
   
 
         </li>
@@ -266,7 +295,10 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><p>本文为北大未名超算队高性能计算入门讲座（二）笔记。<a href="https://www.bilibili.com/video/BV1424y1i7xe">讲座录屏地址</a></p>
+  <article class="markdown"><blockquote class="book-hint info">
+  本文为北大未名超算队高性能计算入门讲座（二）笔记。<a href="https://www.bilibili.com/video/BV1424y1i7xe">讲座录屏地址</a>
+</blockquote>
+
 <h1 id="cuda-入门笔记">
   CUDA 入门笔记
   <a class="anchor" href="#cuda-%e5%85%a5%e9%97%a8%e7%ac%94%e8%ae%b0">#</a>

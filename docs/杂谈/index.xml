@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>阿桥的个人小窝</title>
+    <link>http://example.org/docs/%E6%9D%82%E8%B0%88/</link>
+    <description>Recent content on 阿桥的个人小窝</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language><atom:link href="http://example.org/docs/%E6%9D%82%E8%B0%88/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RM 算法部分代码逻辑</title>
+      <link>http://example.org/docs/%E6%9D%82%E8%B0%88/rm-code-analyze/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/docs/%E6%9D%82%E8%B0%88/rm-code-analyze/</guid>
+      <description>本文为东南大学 3SE 算法组寒假培训第一部分作业。代码仓库地址RM 算法部分代码逻辑#运动预测#运动预测主要是由 Motion_Predict 类完成。位于 Pose/MotionPredictor.cpp 中。
+主要调用的是 predict 函数，该函数接收当前帧的陀螺仪 pitch 与 yaw 数据以及目标在相机坐标系下的坐标。
+predict 函数在接收到参数之后，首先会判断要预测的装甲是否是已经挂了的机器人的装甲。如 35 行：
+if(target_armor-&amp;gt;color != GREEN &amp;amp;&amp;amp; target_armor-&amp;gt;is_in_dead_robot != true) {...} else if(target_armor-&amp;gt;color==GREEN &amp;amp;&amp;amp; target_armor-&amp;gt;is_in_dead_robot==false) {...} 下面 else if 的情况是因为击中装甲板可能会识别到暗的那一帧，这时 color 是 GREEN 但是车并不是死的。
+若为挂了的机器人，则会直接返回，并且取上一次的 yaw 轴数据覆盖当前的 yaw 轴数据。
+否则，会根据下面的公式将相机坐标系下的坐标转换到世界坐标系下。
+\[\begin{bmatrix}x_W \\y_W \\z_W\end{bmatrix}=R_{3 \times 3}(\begin{bmatrix}x_C \\y_C \\z_C\end{bmatrix}&amp;#43; T_{3\times 1})\]也就是代码中的</description>
+    </item>
+    
+    <item>
+      <title>利用 chrono 实现简单的计时器</title>
+      <link>http://example.org/docs/%E6%9D%82%E8%B0%88/cpp11-simple-timer/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/docs/%E6%9D%82%E8%B0%88/cpp11-simple-timer/</guid>
+      <description>利用 chrono 实现简单的计时器#通过使用 C++11 的 chrono 库实现简单的计时器，可以精确到毫秒。
+#include &amp;lt;iostream&amp;gt; #include &amp;lt;chrono&amp;gt; // A simple timer using std::chrono::system_clock; using std::chrono::duration_cast; using std::chrono::milliseconds; int main() { // Begin timer auto start = system_clock::now(); for (int i = 1; i &amp;lt; 1000000000; ++i); // End timer auto end = system_clock::now(); // Calculate time in ms auto duration = duration_cast&amp;lt;milliseconds&amp;gt;(end - start); std::cout &amp;lt;&amp;lt; &amp;#34;It takes &amp;#34; &amp;lt;&amp;lt; duration.count() &amp;lt;&amp;lt; &amp;#34; ms&amp;#34;; } </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -18,12 +18,12 @@ package com.example.cameraalbumtest import android.os.Bundle import androidx.act
     </item>
     
     <item>
-      <title>Android inflate的简单分析</title>
+      <title>Android inflate 的简单分析</title>
       <link>http://example.org/docs/android/what-is-android-inflate/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://example.org/docs/android/what-is-android-inflate/</guid>
-      <description>Android inflate的简单分析#最近学了一些Android开发，但是对于inflate这一概念还是云里雾里不甚理解，每次也都是靠着Android Studio的补全来写。今天就仔细研究一下inflate的原理。
+      <description>Android inflate 的简单分析#最近学了一些Android开发，但是对于inflate这一概念还是云里雾里不甚理解，每次也都是靠着Android Studio的补全来写。今天就仔细研究一下inflate的原理。
 什么是 inflate#一般而言，inflate的作用是将一个xml对象转换为View对象。在这之前，我想简单的谈一下View是什么。
 我们都知道例如Button, TextView等控件，而View是这些控件的共同基类。它是一种抽象的存在，意为这些控件，同样的还有ViewGroup，也就是控件组，表示一组控件。
 Android 程序运行时，是通过获取View来展示对应的画面的，而我们一般的都是写xml文件，因此需要有一个将xml转换为View的工具，也就是inflate.

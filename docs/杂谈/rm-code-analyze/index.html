@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="本文为东南大学 3SE 算法组寒假培训第一部分作业。代码仓库地址RM 算法部分代码逻辑#运动预测#运动预测主要是由 Motion_Predict 类完成。位于 Pose/MotionPredictor.cpp 中。
+主要调用的是 predict 函数，该函数接收当前帧的陀螺仪 pitch 与 yaw 数据以及目标在相机坐标系下的坐标。
+predict 函数在接收到参数之后，首先会判断要预测的装甲是否是已经挂了的机器人的装甲。如 35 行：
+if(target_armor-&gt;color != GREEN &amp;&amp; target_armor-&gt;is_in_dead_robot != true) {...} else if(target_armor-&gt;color==GREEN &amp;&amp; target_armor-&gt;is_in_dead_robot==false) {...} 下面 else if 的情况是因为击中装甲板可能会识别到暗的那一帧，这时 color 是 GREEN 但是车并不是死的。
+若为挂了的机器人，则会直接返回，并且取上一次的 yaw 轴数据覆盖当前的 yaw 轴数据。
+否则，会根据下面的公式将相机坐标系下的坐标转换到世界坐标系下。
+\[\begin{bmatrix}x_W \\y_W \\z_W\end{bmatrix}=R_{3 \times 3}(\begin{bmatrix}x_C \\y_C \\z_C\end{bmatrix}&#43; T_{3\times 1})\]也就是代码中的">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="RM 算法部分代码逻辑" />
+<meta property="og:description" content="本文为东南大学 3SE 算法组寒假培训第一部分作业。代码仓库地址RM 算法部分代码逻辑#运动预测#运动预测主要是由 Motion_Predict 类完成。位于 Pose/MotionPredictor.cpp 中。
+主要调用的是 predict 函数，该函数接收当前帧的陀螺仪 pitch 与 yaw 数据以及目标在相机坐标系下的坐标。
+predict 函数在接收到参数之后，首先会判断要预测的装甲是否是已经挂了的机器人的装甲。如 35 行：
+if(target_armor-&gt;color != GREEN &amp;&amp; target_armor-&gt;is_in_dead_robot != true) {...} else if(target_armor-&gt;color==GREEN &amp;&amp; target_armor-&gt;is_in_dead_robot==false) {...} 下面 else if 的情况是因为击中装甲板可能会识别到暗的那一帧，这时 color 是 GREEN 但是车并不是死的。
+若为挂了的机器人，则会直接返回，并且取上一次的 yaw 轴数据覆盖当前的 yaw 轴数据。
+否则，会根据下面的公式将相机坐标系下的坐标转换到世界坐标系下。
+\[\begin{bmatrix}x_W \\y_W \\z_W\end{bmatrix}=R_{3 \times 3}(\begin{bmatrix}x_C \\y_C \\z_C\end{bmatrix}&#43; T_{3\times 1})\]也就是代码中的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/docs/%E6%9D%82%E8%B0%88/rm-code-analyze/" /><meta property="article:section" content="docs" />
+
+
+
+<title>RM 算法部分代码逻辑 | 阿桥的个人小窝</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.f0ee9ac0e14809aa373e0490f2f513a77027ba3eb7a84dbdc029304f6ccf0816.css" integrity="sha256-8O6awOFICao3PgSQ8vUTp3Anuj63qE29wCkwT2zPCBY=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.1e626493de63231b99ca7fb467e722f79aff39cfb10a630818b863af4366a3e1.js" integrity="sha256-HmJkk95jIxuZyn&#43;0Z&#43;ci95r/Oc&#43;xCmMIGLhjr0Nmo&#43;E=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+<link rel="stylesheet" href="/katex/katex.min.css" >
+<script src="/katex/katex.min.js" > </script>
+<script src="/katex/auto-render.min.js" ></script>
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body);
+    });
+</script>
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>阿桥的个人小窝</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Android</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/activity-result-api-crash/" class="">Activity Result API 闪退问题解决</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/android/what-is-android-inflate/" class="">Android inflate 的简单分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>杂谈</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%9D%82%E8%B0%88/rm-code-analyze/" class="active">RM 算法部分代码逻辑</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%9D%82%E8%B0%88/cpp11-simple-timer/" class="">利用 chrono 实现简单的计时器</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>高性能计算笔记</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/cuda-programming-101/" class="">CUDA 入门笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmpi-programming-101/" class="">Open MPI 入门笔记</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>RM 算法部分代码逻辑</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#运动预测">运动预测</a></li>
+    <li><a href="#反陀螺">反陀螺</a></li>
+    <li><a href="#打能量机关">打能量机关</a>
+      <ul>
+        <li><a href="#检测能量机关">检测能量机关</a></li>
+        <li><a href="#进行重力补偿">进行重力补偿</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><blockquote class="book-hint info">
+  本文为东南大学 3SE 算法组寒假培训第一部分作业。<a href="https://gitee.com/liu-zhiqiu/3-se-suanfa">代码仓库地址</a>
+</blockquote>
+
+<h1 id="rm-算法部分代码逻辑">
+  RM 算法部分代码逻辑
+  <a class="anchor" href="#rm-%e7%ae%97%e6%b3%95%e9%83%a8%e5%88%86%e4%bb%a3%e7%a0%81%e9%80%bb%e8%be%91">#</a>
+</h1>
+<h2 id="运动预测">
+  运动预测
+  <a class="anchor" href="#%e8%bf%90%e5%8a%a8%e9%a2%84%e6%b5%8b">#</a>
+</h2>
+<p><strong>运动预测主要是由 <code>Motion_Predict</code> 类完成。位于 Pose/MotionPredictor.cpp 中。</strong></p>
+<p><strong>主要调用的是 <code>predict</code> 函数，该函数接收当前帧的陀螺仪 pitch 与 yaw 数据以及目标在相机坐标系下的坐标。</strong></p>
+<p>predict 函数在接收到参数之后，首先会判断要预测的装甲是否是已经挂了的机器人的装甲。如 35 行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">if</span>(target_armor<span style="color:#ff7b72;font-weight:bold">-&gt;</span>color <span style="color:#ff7b72;font-weight:bold">!=</span> GREEN <span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> target_armor<span style="color:#ff7b72;font-weight:bold">-&gt;</span>is_in_dead_robot <span style="color:#ff7b72;font-weight:bold">!=</span> true) {...}
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">else</span> <span style="color:#d2a8ff;font-weight:bold">if</span>(target_armor<span style="color:#ff7b72;font-weight:bold">-&gt;</span>color<span style="color:#ff7b72;font-weight:bold">==</span>GREEN <span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> target_armor<span style="color:#ff7b72;font-weight:bold">-&gt;</span>is_in_dead_robot<span style="color:#ff7b72;font-weight:bold">==</span>false) {...}
+</span></span></code></pre></div><p>下面 else if 的情况是因为击中装甲板可能会识别到暗的那一帧，这时 color 是 GREEN 但是车并不是死的。</p>
+<p>若为挂了的机器人，则会直接返回，并且取上一次的 yaw 轴数据覆盖当前的 yaw 轴数据。</p>
+<p>否则，会根据下面的公式将相机坐标系下的坐标转换到世界坐标系下。</p>
+
+<link rel="stylesheet" href="/katex/katex.min.css" />
+<script defer src="/katex/katex.min.js"></script>
+<script defer src="/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
+  \[
+\begin{bmatrix}
+x_W \\
+y_W \\
+z_W
+\end{bmatrix}
+=
+R_{3 \times 3}(
+\begin{bmatrix}
+x_C \\
+y_C \\
+z_C
+\end{bmatrix}
+&#43; T_{3\times 1}
+)\]
+</span>
+
+<p>也就是代码中的</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>p_abs <span style="color:#ff7b72;font-weight:bold">=</span> _RVec <span style="color:#ff7b72;font-weight:bold">*</span> (camPoint3D <span style="color:#ff7b72;font-weight:bold">+</span> _TVec);
+</span></span></code></pre></div><p>其中，<span>
+  \(T_{3\times 1}\)
+</span>
+ 代表平移矩阵 (<code>_TVec</code>)，也就是枪管与相机之间的距离。而
+<span>
+  \(R_{3\times 3}\)
+</span>
+ 为旋转矩阵 (<code>_RVec</code>)，
+由 pitch 轴与 yaw 轴两个旋转矩阵<span>
+  \(R_{pitch}\)
+</span>
+ (<code>R_pitch</code>)与<span>
+  \(R_{yaw}\)
+</span>
+ (<code>R_yaw</code>)相乘得来。矩阵如下：</p>
+<span>
+  \[
+R_{pitch} = 
+\begin{bmatrix}
+1 &amp; 0 &amp; 0 \\
+0 &amp; \cos \alpha &amp; -\sin \alpha \\
+0 &amp; \sin \alpha &amp; \cos \alpha
+\end{bmatrix}
+~~~~
+R_{yaw} = 
+\begin{bmatrix}
+\cos \beta &amp; 0 &amp; \sin \beta \\
+0 &amp; 1 &amp; 0 \\
+-\sin \beta &amp; 0 &amp; \cos \beta
+\end{bmatrix}\]
+</span>
+
+<p>也就是代码中的</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>R_yaw <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> cos(poseEuler_gimbal_yaw<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI), <span style="color:#a5d6ff">0</span>, sin(poseEuler_gimbal_yaw<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI),
+</span></span><span style="display:flex;"><span>         <span style="color:#a5d6ff">0</span>,                                   <span style="color:#a5d6ff">1</span>, <span style="color:#a5d6ff">0</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ff7b72;font-weight:bold">-</span>sin(poseEuler_gimbal_yaw<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI), <span style="color:#a5d6ff">0</span>, cos(poseEuler_gimbal_yaw<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI);
+</span></span><span style="display:flex;"><span>R_pitch <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">1</span>, <span style="color:#a5d6ff">0</span>,                                     <span style="color:#a5d6ff">0</span>,
+</span></span><span style="display:flex;"><span>           <span style="color:#a5d6ff">0</span>, cos(poseEuler_gimbal_pitch<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI), <span style="color:#ff7b72;font-weight:bold">-</span>sin(poseEuler_gimbal_pitch<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI),
+</span></span><span style="display:flex;"><span>		   <span style="color:#a5d6ff">0</span>, sin(poseEuler_gimbal_pitch<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI), cos(poseEuler_gimbal_pitch<span style="color:#ff7b72;font-weight:bold">/</span><span style="color:#a5d6ff">180</span><span style="color:#ff7b72;font-weight:bold">*</span>CV_PI);
+</span></span><span style="display:flex;"><span>_RVec <span style="color:#ff7b72;font-weight:bold">=</span> R_yaw <span style="color:#ff7b72;font-weight:bold">*</span> R_pitch;
+</span></span></code></pre></div><p>在转换坐标系后，会判断一下装甲板与上一次预测的装甲板是否为同一个，如果改变，就清空预测的队列，重新预测，否则会使用之前的数据。</p>
+<p>如果转换完的坐标有效（三维不全为 0 ），就会计算目标的各方向上的速度以及总的速度。
+也就是这一行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>velocity_vector <span style="color:#ff7b72;font-weight:bold">=</span> (p_abs <span style="color:#ff7b72;font-weight:bold">-</span> p_abs_bef) <span style="color:#ff7b72;font-weight:bold">/</span> (timeStamp <span style="color:#ff7b72;font-weight:bold">-</span> last_timestamp);
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">double</span> v_predict <span style="color:#ff7b72;font-weight:bold">=</span> velocity_vector.norm();
+</span></span></code></pre></div><p><code>v_predict</code> 就是目标的总的速度。<code>velocity_vector</code> 为目标各方向上的速度。</p>
+<p>如果目标的速度大于 0.05 就会开始判断目标移动的方向。(<code>l56</code>)</p>
+<blockquote class="book-hint warning">
+  <strong>这一部分代码逻辑可能有问题 (<code>l56-80</code>)</strong>
+</blockquote>
+
+<p>判断方向是由 <code>direction_index</code> 完成，如果该值为 2 代表目标向右移动，如果该值为 -2 则代表目标向左移动。</p>
+<p>根据刚才算出的目标各个方向上的速度，</p>
+<ul>
+<li>如果目标在 x 轴方向上速度大于 0，则 <code>direction_index</code> 增加 1。</li>
+<li>如果目标在 x 轴方向上速度小于 0，则 <code>direction_index</code> 减小 1。</li>
+<li><code>direction_index</code> 不会超过上下限 2 与 -2。</li>
+</ul>
+<p>之后，将各方向上的速度保存到队列中。</p>
+<p>如果当前时间戳与上一个时间戳间隔达到了 200ms，就会触发预测。预测的流程如下：</p>
+<ul>
+<li>取出之前保存在队列的速度。(<code>l101</code>)</li>
+<li>过滤掉与当前方向相反的速度。(<code>l107</code>)</li>
+<li>求出速度的平均值。(<code>l113</code>)</li>
+<li>更新时间戳。(<code>l119</code>)</li>
+</ul>
+<blockquote class="book-hint warning">
+  <strong>这一部分代码逻辑可能有问题 (<code>l101-121</code>)</strong>
+</blockquote>
+
+<p>之后将预测出来的速度进行低通滤波：</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>p_abs_lp(<span style="color:#a5d6ff">0</span>) <span style="color:#ff7b72;font-weight:bold">=</span> Fx.LpFilter(p_abs(<span style="color:#a5d6ff">0</span>));
+</span></span><span style="display:flex;"><span>p_abs_lp(<span style="color:#a5d6ff">1</span>) <span style="color:#ff7b72;font-weight:bold">=</span> Fy.LpFilter(p_abs(<span style="color:#a5d6ff">1</span>));
+</span></span><span style="display:flex;"><span>p_abs_lp(<span style="color:#a5d6ff">2</span>) <span style="color:#ff7b72;font-weight:bold">=</span> Fz.LpFilter(p_abs(<span style="color:#a5d6ff">2</span>));
+</span></span></code></pre></div><p>用子弹滞空时间 <code>time_to_fly_delay</code> +通信延迟 <code>time_to_stm</code> 计算出子弹打击到目标需要的时间 <code>time_predict</code> ，并用这个时间乘以计算出来的速度得到世界坐标系下目标的预测坐标 <code>p_abs_pre</code>。也就是：</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>p_abs_pre <span style="color:#ff7b72;font-weight:bold">=</span> p_abs_lp <span style="color:#ff7b72;font-weight:bold">+</span> vel_mean <span style="color:#ff7b72;font-weight:bold">*</span> time_predict <span style="color:#ff7b72;font-weight:bold">*</span> <span style="color:#a5d6ff">1000</span>;
+</span></span></code></pre></div><p>如果目标预测坐标在 z 轴上与本体距离不为 0，就进行如下步骤：</p>
+<ul>
+<li>反推相机坐标系下的目标预测坐标。(<code>l135</code>)</li>
+<li>绘制预测点。(<code>l136</code>)</li>
+<li>计算为了将枪口指向预测点的偏转角度 <code>yaw_pre</code> 与 <code>pitch_pre</code>。(<code>l137-138</code>)</li>
+<li>记录刚才计算的偏转角度。(<code>l139-145</code>)</li>
+</ul>
+<p>最后更新时间戳与之前的预测坐标。(<code>l148-149</code>)</p>
+<h2 id="反陀螺">
+  反陀螺
+  <a class="anchor" href="#%e5%8f%8d%e9%99%80%e8%9e%ba">#</a>
+</h2>
+<p>反陀螺中最简单的便是敌方车辆原地旋转的时候，此时的击打策略为：</p>
+<ul>
+<li>击打敌方车辆中心点。原因在于由于车辆的原地小陀螺确实速度会很快。甚至超过了识别和子弹滞空时间，所以没办法进行预测，就算预测也效率不高。</li>
+<li>取敌方车辆中心点的方法为：取每一个周期的平均值即可。</li>
+</ul>
+<p>在 Main/test_infantry.cpp 中可以看到这部分逻辑，对于低速或者开陀螺的装甲车，是不会使用目标预测的，转而打击目标的中心点。(<code>l439</code>)</p>
+<p><strong>检测机器人是否旋转主要使用 <code>SpinningChecker</code> 类的 <code>checkSpinning</code> 函数实现。位于 Armor/SpinningChecker.cpp 中。</strong></p>
+<p><code>checkSpinning</code> 函数接收一个 <code>Robot</code> 对象并判断该对象是否在旋转。</p>
+<p>函数首先会判断 <code>spinning_trend</code> 数组内数据数量是否足够判断，如果数据不够，则会直接判断为不旋转并返回。(<code>l33</code>)</p>
+<p>这里先简要看下 <code>spinning_trend</code> 数组的作用。这个数组存储着三元组 <span>
+  \((a, b, c)\)
+</span>
+, 其中
+<span>
+  \[
+a=\frac{x}{X}
+,~~~
+b=\frac{y}{Y}\]
+</span>
+</p>
+<p><span>
+  \(c\)
+</span>
+的意义暂且略过不提，如下图：</p>
+<div align="center">
+	<img src="/image/other/rm-code-analyze/relcoord.png" width="50%">
+</div>
+<p>也就是说，这个三元组存储了 <code>robot.main_armor</code> 在 <code>robot.rect</code> 的相对坐标。这也是 <code>getRelativeCoord()</code> 所做的事情，如下代码所示：(<code>l12</code>)</p>
+<div class="highlight"><pre tabindex="0" style="color:#c9d1d9;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>c1.x <span style="color:#ff7b72;font-weight:bold">=</span> robot.main_armor<span style="color:#ff7b72;font-weight:bold">-&gt;</span>center.x <span style="color:#ff7b72;font-weight:bold">-</span> robot.rect.tl().x;
+</span></span><span style="display:flex;"><span>c1.y <span style="color:#ff7b72;font-weight:bold">=</span> robot.main_armor<span style="color:#ff7b72;font-weight:bold">-&gt;</span>center.y <span style="color:#ff7b72;font-weight:bold">-</span> robot.rect.tl().y;
+</span></span><span style="display:flex;"><span>c1.x <span style="color:#ff7b72;font-weight:bold">=</span> c1.x <span style="color:#ff7b72;font-weight:bold">/</span> robot.rect.width;
+</span></span><span style="display:flex;"><span>c1.y <span style="color:#ff7b72;font-weight:bold">=</span> c1.y <span style="color:#ff7b72;font-weight:bold">/</span> robot.rect.height;
+</span></span></code></pre></div><p>回到刚才的正题，如果 <code>spinning_trend</code> 数组内数据数量足够，就会开始计算每两帧之间相对坐标的变化值 <code>delta_RelativePos_x</code> 与 <code>delta_RelativePos_y</code>. (<code>l45-46</code>)</p>
+<p>之后会计算装甲板旋转的速度。这里首先要取相对靠中间的装甲板计算速度 (<code>l51</code>), 将所有的差值求平均数即为最终的装甲板运动速度 <code>armor_relative_speed</code> 并将其保存起来 。(<code>l65, l72</code>)</p>
+<p>根据最后两帧装甲板移动的速度，可更新装甲板旋转程度 <code>spinning_score</code>。(<code>l79-88</code>)</p>
+<blockquote class="book-hint warning">
+  <strong>这一部分代码逻辑可能有问题 (<code>l69-72</code>)</strong>
+</blockquote>
+
+<ul>
+<li>如果速度大于阈值，则旋转程度 <code>spinning_score</code> +1</li>
+<li>如果速度大于阈值，则旋转程度 <code>spinning_score</code> -1</li>
+<li>旋转程度 <code>spinning_score</code> 不会超过 0 和 15</li>
+</ul>
+<p>如果旋转程度大于 5 则判定为在旋转。更新 <code>is_spinning</code> 并返回。(<code>l95</code>)</p>
+<h2 id="打能量机关">
+  打能量机关
+  <a class="anchor" href="#%e6%89%93%e8%83%bd%e9%87%8f%e6%9c%ba%e5%85%b3">#</a>
+</h2>
+<p><strong>打能量机关（打符）主要由 <code>Windmill</code> 类实现。位于 Windmill/Windmill.cpp 内。</strong></p>
+<p>整个打符的流程大致如下：</p>
+<ol>
+<li>串口获得当前任务为打符，进入打符流程。(<code>Main/test_infantry.cpp:250</code>)</li>
+<li>加载当前帧的图像以及时间戳。(<code>Main/test_infantry.cpp:258</code>)</li>
+<li><strong>检测能量机关。</strong>(<code>Main/test_infantry.cpp:265</code>)</li>
+<li><strong>进行重力补偿，计算角度数据并回传。</strong>(<code>Main/test_infantry.cpp:270-316</code>)</li>
+</ol>
+<p>核心步骤为 3 与 4.</p>
+<h3 id="检测能量机关">
+  检测能量机关
+  <a class="anchor" href="#%e6%a3%80%e6%b5%8b%e8%83%bd%e9%87%8f%e6%9c%ba%e5%85%b3">#</a>
+</h3>
+<p><strong>检测能量机关主要由 <code>Windmill</code> 类的 <code>Detect()</code> 函数实现。位于 Windmill/Windmill.cpp 内。</strong></p>
+<ol>
+<li>首先，分离三通道的图像 (<code>l260-267</code>)，并根据设定的风车颜色使用阈值进行二值化。(<code>l268-279</code>)</li>
+<li>合并二值化图像，取图像交集。(<code>l313-339</code>)</li>
+<li>对图像进行膨胀处理。(<code>l349-353</code>)</li>
+<li>对膨胀处理后的图像寻找轮廓。将要打击的装甲板的颜色要比已经打击的装甲板更亮，所以经过滤波之后已经打击过的装甲板会有一部分成分的残缺，这不用管，可以还会对后面的识别有所帮助。(<code>l363</code>)</li>
+<li>进行扇叶的识别 (<code>Fan_recognition()</code> 函数)
+<ul>
+<li>根据轮廓大小进行过滤，剔除过大/过小的扇叶。(<code>l818</code>)</li>
+<li>如果大小符合要求，进行匹配，将匹配度保存到 <code>comres_swatter</code> 数组中。(<code>l824</code>)</li>
+<li>选出匹配度最高的扇叶，如果该扇叶匹配度仍不达标则视为没有找到扇叶并返回。(<code>l855</code>)</li>
+<li>否则，计算扇叶的质心 <code>_fanCenter</code>。(<code>l887</code>)</li>
+<li>之后寻找距离质心最远的点 <code>newDirection</code>，该点由距离质心最远的点与相邻两点取平均数得到。(<code>l893-916</code>)</li>
+<li>将 <code>newDirection</code> 与 <code>_fanCenter</code> 加上偏移值，得到在原图中的坐标。标记找到了扇叶并返回(<code>l918-921</code>)</li>
+</ul>
+</li>
+<li>识别风扇中间的 R 标志 (<code>R_recognition()</code> 函数)
+<ul>
+<li>大体步骤与扇叶识别一致，最终返回 R 标志中心坐标 <code>_center</code>。(<code>l978-979</code>)</li>
+</ul>
+</li>
+<li>调用 <code>returnNextPoint()</code> 计算打击预测点。
+<ul>
+<li>调用 <code>forecastNextPoint()</code> 计算打击预测点
+<ul>
+<li>为了获知装置旋转的方向，这个函数在前十次调用不会返回预测点，而是通过这前十次计算调用计算装置旋转的方向。计数器为 <code>_framecounter</code>。</li>
+<li>每次调用会将当前由扇叶指向中心的向量与上一次由扇叶指向中心叉乘，根据正负号判断方向。如果为负，则 <code>for_clock</code> 增加。(<code>l457-465</code>)</li>
+<li>前十次调用结束后，如果 <code>for_clock</code> 大于 5 则为顺时针方向。(<code>l602</code>)</li>
+<li>小大符思路基本一致，大符可能判断次数多一些。</li>
+<li>根据弹速计算出预测点与当前点偏移的圆心角 <code>forecast_angle</code>。(<code>l600</code>)</li>
+<li>根据偏移的圆心角计算出预测点 <code>forecastPointPlus</code> 并返回。(<code>l694-718</code>)</li>
+</ul>
+</li>
+<li>检查刚才预测的是否合理。
+<ul>
+<li>计算扇叶重心与预测点距离，并对其进行过滤，过大或过小均视为未找到并返回。(<code>l751</code>)</li>
+<li>计算扇叶最远点与装置中心点距离，并对其进行过滤，过大或过小均视为未找到并返回。(<code>l757</code>)</li>
+<li>计算扇叶重心与装置中心点距离，并对其进行过滤，过大或过小均视为未找到并返回。(<code>l764</code>)</li>
+</ul>
+</li>
+<li>如果合理，返回刚才预测的打击点。</li>
+</ul>
+</li>
+<li>调用 <code>Whether_To_Hit()</code> 判断是否击打目标。如果轮廓大小合适则予以打击。如果五个扇叶全亮则停止打击。</li>
+</ol>
+<h3 id="进行重力补偿">
+  进行重力补偿
+  <a class="anchor" href="#%e8%bf%9b%e8%a1%8c%e9%87%8d%e5%8a%9b%e8%a1%a5%e5%81%bf">#</a>
+</h3>
+<p><strong>调用 <code>gravityOffset()</code> 函数实现，参见群文件 技术文档_位姿解算.pdf</strong></p>
+<p>最后将补偿完的角度加到 pitch 轴上 (<code>l292</code>) 并返回控制数据。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#运动预测">运动预测</a></li>
+    <li><a href="#反陀螺">反陀螺</a></li>
+    <li><a href="#打能量机关">打能量机关</a>
+      <ul>
+        <li><a href="#检测能量机关">检测能量机关</a></li>
+        <li><a href="#进行重力补偿">进行重力补偿</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
