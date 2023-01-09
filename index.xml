@@ -63,6 +63,19 @@ MCA 架构如右图所示。MCA 使得它可以支持一些更灵活的东西。
     </item>
     
     <item>
+      <title>OpenMP 入门笔记</title>
+      <link>http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmp-programming-101/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/docs/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97%E7%AC%94%E8%AE%B0/openmp-programming-101/</guid>
+      <description>本文为北大未名超算队高性能计算入门讲座（四）笔记。讲座录屏地址
+作者： 北京大学元培学院 王瑞诚
+点此下载源码： 下载源码OpenMP 入门笔记#简介#OpenMP 是什么#Open Multi-Processing OpenMP 是一个应用程序接口（API） 你可以简单理解为它是一个库 支持 C, C++ 和 Fortran 支持多种指令集和操作系统 由非营利性组织管理，由多家软硬件厂家参与，包括 Arm, AMD, IBM, Intel, Cray, HP, Fujitsu, Nvidia 等 可以在官网页面查询到 OpenMP 的历史版本和发布日期
+技术框架#包含OpenMP library和OpenMP Runtime library
+执行模型：Fork-Join Model#单线程 (initial thread) 开始执行 进入并行区 (parallel region) 开始并行执行 在并行区结尾进行同步和结束线程，继续单线程执行程序 基础知识#进程和线程#进程 每个进程有自己独立的地址空间 CPU在进程之间切换需要进行上下文切换 线程 一个进程下的线程共享地址空间 CPU在线程之间切换开销较小 你可以简单理解，硬件和操作系统会自行将线程调度到CPU核心运行 所以当线程数目超过核心数，会出现多个线程抢占一个CPU核心，导致性能下降 超线程 (hyper-threading) 将单个CPU物理核心抽象为多个（目前通常为2个）逻辑核心，共享物理核心的计算资源 硬件内存模型#CPU核心在主存之上有 L1, L2, L3 多级缓存 L1, L2 缓存是核心私有的 硬件和操作系统保证不同核心的缓存一致性 (coherence) 被称为 cache coherence non-uniform access architecture (ccNUMA) 缓存一致性会带来 False Sharing 的问题（之后会讲到） 实际的内存模型更加复杂</description>
+    </item>
+    
+    <item>
       <title>RM 算法部分代码逻辑</title>
       <link>http://example.org/docs/%E6%9D%82%E8%B0%88/rm-code-analyze/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
