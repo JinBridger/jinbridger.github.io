@@ -1,0 +1,48 @@
+/* sarasa-regular - latin */
+@font-face {
+  font-family: 'Sarasa UI SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(''),
+       url('fonts/sarasa-ui-sc-regular.ttf') format('ttf'); /* Chrome 26+, Opera 23+, Firefox 39+ */
+}
+/* sarasa-700 - latin */
+@font-face {
+  font-family: 'Sarasa UI SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local(''),
+       url('fonts/sarasa-ui-sc-bold.ttf') format('ttf'); /* Chrome 26+, Opera 23+, Firefox 39+ */
+}
+
+/* fira-code-regular - latin */
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(''),
+       url('fonts/FiraCode-Regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('fonts/FiraCode-Regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* fira-code-Bold - latin */
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local(''),
+       url('fonts/FiraCode-Bold.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('fonts/FiraCode-Bold.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+body {
+  font-family: 'Sarasa UI SC', sans-serif;
+}
+
+code {
+  font-family: 'Fira Code', monospace;
+}
