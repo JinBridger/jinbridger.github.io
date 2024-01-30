@@ -4,7 +4,7 @@ type: docs
 bookToc: false
 ---
 
-# 欢迎来到我的网站 - Welcome to my website!
+<!-- # 欢迎来到我的网站 - Welcome to my website! -->
 
 <!-- <br><br/>
 
@@ -21,6 +21,8 @@ bookToc: false
         </p>
 </div> -->
 
+![Ling and Chongyue](https://github.com/JinBridger/JinBridger/assets/89779290/bb10497e-0e04-4374-9d73-0f2c5bc59dce)
+
 {{< hint info >}}
 **欢迎来到我的网站！**
 
@@ -30,11 +32,13 @@ bookToc: false
 - 最近的一些想法
 - ...
 
-什么都不会，什么都在学~
 {{< /hint >}}
+
 
 {{< hint warning >}}
-**我目前在实习，正在参与一些有趣的项目。**
+**我目前在 Intel 实习，正在参与一些有趣的项目：**
 
-欢迎访问我的 GitHub 主页!
+>**BigDL-LLM [🔗](https://github.com/intel-analytics/BigDL)**: a library for running LLM (large language model) on Intel XPU (from Laptop to GPU to Cloud) using INT4/FP4/INT8/FP8 with very low latency (for any PyTorch model). 
+
 {{< /hint >}}
+

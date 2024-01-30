@@ -3,6 +3,14 @@
     {{- with .Site.Params.BookLogo -}}
     <img src="{{ . | relURL }}" alt="Logo" />
     {{- end -}}
-    <span>{{ .Site.Title }}</span>
+    <!-- {{ .Site.Title }} -->
+    <style>
+      .avatar img{
+        border-radius:4px;
+      }
+    </style>
+    <div class="avatar">
+      <img src="/image/main-page/avatar.png">
+    </div>
   </a>
 </h2>

@@ -1,6 +1,6 @@
 baseURL = 'http://example.org/'
 languageCode = 'zh-cn'
-title = ''
+title = 'JinBridge'
 theme = 'hugo-book'
 
 [markup.goldmark.renderer]
