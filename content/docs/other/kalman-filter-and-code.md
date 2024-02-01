@@ -13,8 +13,6 @@ weight: 1
 
 ## 什么是卡尔曼滤波
 
-在我们的比赛中，我们常常需要获取目标的位置，以调整弹道，发射弹丸。但是，单靠传感器来计算目标位置是不够的，因为它的数据可能波动非常大，不是很稳定。因此，我们需要使用卡尔曼滤波来处理我们通过传感器获得的数据。
-
 根据维基百科的描述：卡尔曼滤波（Kalman filter）是一种高效率的递归滤波器（自回归滤波器），它能够从一系列的不完全及包含噪声的测量中，估计动态系统的状态。下面一张图展示了滤波前与滤波后的区别：传感器直接获取的数据是绿色线，真实坐标是红色虚线，而经过卡尔曼滤波之后的数据是蓝线。可见，卡尔曼滤波极大的提高了数据的稳定性，降低了噪声对其的影响。
 
 <div align="center">
@@ -321,37 +319,3 @@ __再加上之前的预测公式，就是卡尔曼滤波的所谓黄金五条：
 <div align="center">
 	<img src="/image/other/kalman-filter-and-code/all-in-all.png" width="90%">
 </div>
-
-## 3SE代码中的卡尔曼滤波
-
-3SE中的卡尔曼滤波部分的代码在 `Pose/KF.hpp` 中。核心的函数是
-
-```cpp
-Eigen::VectorXd KF_function(Eigen::Vector3d gimblePoint3D,
-                            double          the_time_stamp, 
-                            bool            target_change);
-```
-
-这个函数返回一个向量，也就是原理中提到的 {{< katex >}}\hat{\mathbf{x}_k}{{< /katex >}}
-
-这个函数接收三个参数，分别为：
-
-- `gimblePoint3D`：根据四点测算得到的位置，也就是 {{< katex >}}\mathbf{z}_k{{< /katex >}}
-- `the_time_stamp`：当前时间戳
-- `target_change`：目标是否发生了变化
-
-如果上次滤波与当前相隔时间比较长，那么就不会进行滤波，而是保存当前状态与时间戳，直接返回。
-
-否则，则按照上面的原理进行滤波。相关代码如下：
-
-```cpp
-x_ = A*x;
-K = P*H.transpose()*(H*P*H.transpose() + R).inverse();
-P_ = (I - K*H)*P;
-z << gimblePoint3D(0), gimblePoint3D(1), gimblePoint3D(2);
-x = x_ + K*(z - H*x_);
-P = A*P_*A.transpose() + Q;
-time_stamp = the_time_stamp;
-```
-
-最终返回预测的状态 {{< katex >}}\hat{\mathbf{x}_k}{{< /katex >}}，完成滤波。
