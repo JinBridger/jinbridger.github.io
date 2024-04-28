@@ -1,4 +1,4 @@
 ---
 bookFlatSection: true
-title: "杂谈"
+title: "💡 杂谈"
 ---
