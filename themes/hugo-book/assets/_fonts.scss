@@ -1,3 +1,5 @@
+@import "monolisa";
+
 @font-face {
   font-family: 'Fira Code';
   font-style: normal;
@@ -22,10 +24,11 @@
        url('/fonts/SegoeEmoji.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
 }
 
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Noto Sans SC', 'Segoe Emoji', sans-serif;
 }
 
 code {
-  font-family: -apple-system, BlinkMacSystemFont, 'Fira Code', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'MonoLisa', monospace;
 }

@@ -1,9 +1,11 @@
 :root {
   @include theme-light;
+  @import "../syntax-light";
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     @include theme-dark;
+    @import "../syntax-dark";
   }
 }
