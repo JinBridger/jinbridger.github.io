@@ -73,14 +73,14 @@
 
   code {
     padding: 0 $padding-4;
-    background: #353940;
+    background: var(--code-background);
     border-radius: $border-radius;
     font-size: 0.875em;
   }
 
   pre {
     padding: $padding-16;
-    background: #171b21;
+    background: var(--code-background);
     border-radius: $border-radius;
     overflow-x: auto;
 
