@@ -1,5 +1,5 @@
 ---
-title: "访谈：算法工程师"
+title: "访谈一位算法工程师"
 weight: 1
 # bookFlatSection: false
 # bookToc: true
@@ -9,7 +9,7 @@ weight: 1
 # bookSearchExclude: false
 ---
 
-# 访谈：算法工程师
+# 访谈一位算法工程师
 
 {{< hint info >}}
 在某个课程上，我有幸访谈了一位学长。他目前作为一名算法工程师就职于阿里。以下是访谈内容原文。🤔代表笔者 👨‍💻代表学长
