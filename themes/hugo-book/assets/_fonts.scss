@@ -1,17 +1,10 @@
 @import "monolisa";
 
 @font-face {
-  font-family: 'Fira Code';
-  font-style: normal;
-  font-display: swap;
-  src: local(''),
-       url('/fonts/FiraCode-VF.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-}
-
-@font-face {
   font-family: 'Inter';
   font-style: normal;
   font-display: swap;
+  font-weight: 100 900;
   src: local(''),
        url('/fonts/InterVariable.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
 }
