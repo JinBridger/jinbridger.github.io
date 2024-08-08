@@ -1,9 +1,10 @@
-baseURL = 'http://example.org/'
-languageCode = 'zh-cn'
+baseURL = 'https://jinbridger.github.io/'
 title = 'JinBridge'
+defaultContentLanguage = "cn"
 theme = 'hugo-book'
 pygmentsUseClasses = true
 pygmentsCodefences = true
+enableGitInfo = true
 
 [markup.goldmark.renderer]
   unsafe = true
@@ -21,7 +22,7 @@ pygmentsCodefences = true
   # (Optional, default January 2, 2006) Configure the date format used on the pages
   # - In git information
   # - In blog posts
-  BookDateFormat = 'Jan 2, 2006'
+  BookDateFormat = '2006 年 1 月 2 日'
 
   # (Optional, default true) Enables search function with flexsearch,
   # Index is built on fly, therefore it might slowdown your website.
@@ -33,3 +34,7 @@ pygmentsCodefences = true
   # See https://gohugo.io/content-management/comments/#configure-disqus
   # Can be overwritten by same param in page frontmatter
   BookComments = true
+
+  BookRepo = 'https://github.com/JinBridger/jinbridger.github.io'
+  BookCommitPath = 'commit'
+  BookEditPath = 'tree/main'
