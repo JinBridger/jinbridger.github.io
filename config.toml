@@ -5,6 +5,7 @@ theme = 'hugo-book'
 pygmentsUseClasses = true
 pygmentsCodefences = true
 enableGitInfo = true
+hasCJKLanguage = true
 
 [markup.goldmark.renderer]
   unsafe = true
