@@ -258,6 +258,17 @@ body[dir="rtl"] .book-menu {
   }
 }
 
+.book-before {
+  padding-bottom: $padding-8 * 3;
+  font-size: $font-size-14;
+
+  img {
+    height: 1em;
+    width: 1em;
+    margin-inline-end: $padding-8;
+  }
+}
+
 .book-comments {
   margin-top: $padding-16;
 }

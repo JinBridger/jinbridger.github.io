@@ -1,0 +1,25 @@
+<div class="book-before">
+<div class="flex flex-wrap justify-between">
+
+    {{ if and .GitInfo .Site.Params.BookRepo }}
+      <div>
+        {{- $date := partial "docs/date" (dict "Date" .GitInfo.AuthorDate.Local "Format" .Site.Params.BookDateFormat) -}}
+        {{- $commitPath := default "commit" .Site.Params.BookCommitPath -}}
+        <a class="flex align-center" href="{{ .Site.Params.BookRepo }}/{{ $commitPath }}/{{ .GitInfo.Hash }}" title='{{ i18n "Last modified by" }} {{ .GitInfo.AuthorName }} | {{ $date }}' target="_blank" rel="noopener">
+          <img src="{{ "svg/calendar.svg" | relURL }}" class="book-icon" alt="Calendar" />
+          <span>最后修改于 {{ $date }}</span>
+        </a>
+      </div>
+    {{ end }}
+    
+    {{ if and .File .Site.Params.BookRepo .Site.Params.BookEditPath }}
+      <div>
+        <div class="flex align-center">
+          <img src="{{ "svg/book.svg" | relURL }}" class="book-icon" alt="Edit" />
+          <span>共 {{ .WordCount  }} 字，阅读需要 {{ .ReadingTime  }} 分钟</span>
+        </div>
+      </div>
+    {{ end }}
+    
+    </div>
+</div>
