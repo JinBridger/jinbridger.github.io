@@ -1,6 +1,7 @@
 ---
 title: "解决阿里云 OSS 下载速度问题"
 weight: 1
+date: 2024-08-25
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false

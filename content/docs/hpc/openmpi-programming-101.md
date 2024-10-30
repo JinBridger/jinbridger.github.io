@@ -1,6 +1,7 @@
 ---
 title: "Open MPI 入门笔记"
 weight: 1
+date: 2023-01-01
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false

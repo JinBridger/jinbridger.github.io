@@ -1,6 +1,7 @@
 ---
 title: "用实时地球图像做壁纸"
 weight: 1
+date: 2024-05-22
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false
