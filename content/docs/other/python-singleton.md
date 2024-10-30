@@ -1,6 +1,7 @@
 ---
 title: "Python 实现单例模式的误区"
 weight: 1
+date: 2024-08-09
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false

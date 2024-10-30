@@ -1,6 +1,7 @@
 ---
 title: "怎么使用 LaTeX 写博客"
 weight: 1
+date: 2024-04-18
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false

@@ -1,6 +1,7 @@
 ---
 title: "如何给校园网内地址做 DDNS"
 weight: 1
+date: 2024-05-12
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false

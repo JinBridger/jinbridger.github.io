@@ -1,6 +1,7 @@
 ---
 title: "GUI 显示手段的进化史"
 weight: 1
+date: 2024-01-01
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false

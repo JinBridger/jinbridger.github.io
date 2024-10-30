@@ -1,6 +1,7 @@
 ---
 title: "llm.c 源码解析 - GPT-2 结构"
 weight: 1
+date: 2024-08-18
 # bookFlatSection: false
 # bookToc: true
 # bookHidden: false
