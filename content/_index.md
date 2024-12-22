@@ -5,7 +5,7 @@ bookToc: false
 date: 2024-10-30
 ---
 
-![Ling, Cantabile and Mulberry](https://i.imgur.com/jpS2YpR.png)
+![Final Fantasy VII Remake](https://i.imgur.com/EeyEKSD.jpg)
 
 {{< hint info >}}
 **欢迎来到我的博客！🥰**
