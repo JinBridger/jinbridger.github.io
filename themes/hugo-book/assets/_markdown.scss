@@ -188,6 +188,7 @@
     border-radius: $border-radius;
 
     summary {
+      outline: none;
       line-height: 1;
       padding: $padding-16;
       margin: -$padding-16;
@@ -208,6 +209,7 @@
 }
 
 .markdown-inner {
+  margin-top: 0.5rem;
   // Util class to remove extra margin in nested markdown content
   > :first-child {
     margin-top: 0;
