@@ -18,9 +18,9 @@ llm.c 是一个开源的用 Cuda 与 C 写成的简易 LLM 推理框架，用大
 
 下面单看一个 token 是怎么计算 Loss的，假设数据集中这个位置的 token 在词表中的下标为 $t$, 设以下符号对应:
 
-- $L$ &emsp; 损失函数
-- $\mathbf P$ &emsp; 长度为词表大小的向量, 其中 $\mathbf P_i$ 代表这个 token 为词表里面编号为 i 的 token 的概率 (Prob), 通过 Softmax 由 $\mathbf S$ 计算而来
-- $\mathbf S$ &emsp; 长度为词表大小的向量, 其中 $\mathbf S_i$ 代表这个 token 为词表里面编号为 i 的 token 的分数 (Score)
+- $L$：损失函数
+- $\mathbf P$：长度为词表大小的向量, 其中 $\mathbf P_i$ 代表这个 token 为词表里面编号为 $i$ 的 token 的概率 (Prob), 通过 Softmax 由 $\mathbf S$ 计算而来
+- $\mathbf S$：长度为词表大小的向量, 其中 $\mathbf S_i$ 代表这个 token 为词表里面编号为 $i$ 的 token 的分数 (Score)
 
 GPT-2 采用的 Loss 计算方式是交叉熵损失函数 (Cross Entropy) 即
 
@@ -37,7 +37,7 @@ $$
 $$
 \dfrac{\partial L}{\partial \mathbf P}=
 \begin{bmatrix}
-\dfrac{\partial L}{\partial \mathbf P_1} & \dfrac{\partial L}{\partial \mathbf P_2} & \cdots & \dfrac{\partial L}{\partial \mathbf P_{V-1}} 
+\dfrac{\partial L}{\partial \mathbf P_1} & \dfrac{\partial L}{\partial \mathbf P_2} & \cdots & \dfrac{\partial L}{\partial \mathbf P_{V}} 
 \end{bmatrix}
 $$
 
@@ -56,10 +56,10 @@ $$
 $$
 \dfrac{\partial \mathbf P}{\partial \mathbf S}=
 \begin{bmatrix}
-\dfrac{\partial \mathbf P_1}{\partial \mathbf S_1} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_1} & \cdots & \dfrac{\partial \mathbf P_{V-1}}{\partial \mathbf S_1} \\\\
-\dfrac{\partial \mathbf P_1}{\partial \mathbf S_2} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_2} & \cdots & \dfrac{\partial \mathbf P_{V-1}}{\partial \mathbf S_2} \\\\
+\dfrac{\partial \mathbf P_1}{\partial \mathbf S_1} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_1} & \cdots & \dfrac{\partial \mathbf P_{V}}{\partial \mathbf S_1} \\\\
+\dfrac{\partial \mathbf P_1}{\partial \mathbf S_2} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_2} & \cdots & \dfrac{\partial \mathbf P_{V}}{\partial \mathbf S_2} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\dfrac{\partial \mathbf P_1}{\partial \mathbf S_{V-1}} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_{V-1}} & \cdots & \dfrac{\partial \mathbf P_{V-1}}{\partial \mathbf S_{V-1}} \\\\
+\dfrac{\partial \mathbf P_1}{\partial \mathbf S_{V}} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_{V}} & \cdots & \dfrac{\partial \mathbf P_{V}}{\partial \mathbf S_{V}} \\\\
 \end{bmatrix}
 $$
 
@@ -80,17 +80,17 @@ $$
 \dfrac{\partial L}{\partial \mathbf S}&=\dfrac{\partial L}{\partial \mathbf P}\dfrac{\partial \mathbf P}{\partial \mathbf S} \\\\
 &=
 \begin{bmatrix}
-\dfrac{\partial L}{\partial \mathbf P_1} & \dfrac{\partial L}{\partial \mathbf P_2} & \cdots & \dfrac{\partial L}{\partial \mathbf P_{V-1}} 
+\dfrac{\partial L}{\partial \mathbf P_1} & \dfrac{\partial L}{\partial \mathbf P_2} & \cdots & \dfrac{\partial L}{\partial \mathbf P_{V}} 
 \end{bmatrix}
 \begin{bmatrix}
-\dfrac{\partial \mathbf P_1}{\partial \mathbf S_1} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_1} & \cdots & \dfrac{\partial \mathbf P_{V-1}}{\partial \mathbf S_1} \\\\
-\dfrac{\partial \mathbf P_1}{\partial \mathbf S_2} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_2} & \cdots & \dfrac{\partial \mathbf P_{V-1}}{\partial \mathbf S_2} \\\\
+\dfrac{\partial \mathbf P_1}{\partial \mathbf S_1} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_1} & \cdots & \dfrac{\partial \mathbf P_{V}}{\partial \mathbf S_1} \\\\
+\dfrac{\partial \mathbf P_1}{\partial \mathbf S_2} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_2} & \cdots & \dfrac{\partial \mathbf P_{V}}{\partial \mathbf S_2} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\dfrac{\partial \mathbf P_1}{\partial \mathbf S_{V-1}} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_{V-1}} & \cdots & \dfrac{\partial \mathbf P_{V-1}}{\partial \mathbf S_{V-1}} \\\\
+\dfrac{\partial \mathbf P_1}{\partial \mathbf S_{V}} & \dfrac{\partial \mathbf P_2}{\partial \mathbf S_{V}} & \cdots & \dfrac{\partial \mathbf P_{V}}{\partial \mathbf S_{V}} \\\\
 \end{bmatrix}\\\\
 &=
 \begin{bmatrix}
-\mathbf P_1 & \mathbf P_2 & \cdots & \mathbf P_t - 1 & \cdots & \mathbf P_{V-1}
+\mathbf P_1 & \mathbf P_2 & \cdots & \mathbf P_t - 1 & \cdots & \mathbf P_{V}
 \end{bmatrix}
 \end{aligned}
 $$
@@ -120,17 +120,17 @@ $$
 \dfrac{\partial L}{\partial \mathbf X}
 &=
 \begin{bmatrix}
-\dfrac{\partial L}{\partial \mathbf X_{1,1}} & \dfrac{\partial L}{\partial \mathbf X_{1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf X_{1,C-1}} \\\\
-\dfrac{\partial L}{\partial \mathbf X_{2,1}} & \dfrac{\partial L}{\partial \mathbf X_{2,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf X_{2,C-1}} \\\\
+\dfrac{\partial L}{\partial \mathbf X_{1,1}} & \dfrac{\partial L}{\partial \mathbf X_{1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf X_{1,C}} \\\\
+\dfrac{\partial L}{\partial \mathbf X_{2,1}} & \dfrac{\partial L}{\partial \mathbf X_{2,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf X_{2,C}} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\dfrac{\partial L}{\partial \mathbf X_{T-1,1}} & \dfrac{\partial L}{\partial \mathbf X_{T-1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf X_{T-1,C-1}} \\\\
+\dfrac{\partial L}{\partial \mathbf X_{T,1}} & \dfrac{\partial L}{\partial \mathbf X_{T,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf X_{T,C}} \\\\
 \end{bmatrix} \\\\
 &=
 \begin{bmatrix}
-\dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{1,1}} & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{1,C-1}} \\\\
-\dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{2,1}} & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{2,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{2,C-1}} \\\\
+\dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{1,1}} & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{1,C}} \\\\
+\dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{2,1}} & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{2,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{2,C}} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{T-1,1}} & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{T-1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{T-1,C-1}} \\\\
+\dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{T,1}} & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{T,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{T,C}} \\\\
 \end{bmatrix}
 \end{aligned}
 $$
@@ -141,10 +141,10 @@ $$
 \dfrac{\partial L}{\partial \mathbf Y}
 &=
 \begin{bmatrix}
-\dfrac{\partial L}{\partial \mathbf Y_{1,1}} & \dfrac{\partial L}{\partial \mathbf Y_{1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{1,C-1}} \\\\
-\dfrac{\partial L}{\partial \mathbf Y_{2,1}} & \dfrac{\partial L}{\partial \mathbf Y_{2,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{2,C-1}} \\\\
+\dfrac{\partial L}{\partial \mathbf Y_{1,1}} & \dfrac{\partial L}{\partial \mathbf Y_{1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{1,C}} \\\\
+\dfrac{\partial L}{\partial \mathbf Y_{2,1}} & \dfrac{\partial L}{\partial \mathbf Y_{2,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{2,C}} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\dfrac{\partial L}{\partial \mathbf Y_{T-1,1}} & \dfrac{\partial L}{\partial \mathbf Y_{T-1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{T-1,C-1}} \\\\
+\dfrac{\partial L}{\partial \mathbf Y_{T,1}} & \dfrac{\partial L}{\partial \mathbf Y_{T,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{T,C}} \\\\
 \end{bmatrix}
 \end{aligned}
 $$
@@ -153,57 +153,34 @@ $$
 \dfrac{\partial \mathbf Y}{\partial \mathbf X_{i,j}}
 &=
 \begin{bmatrix}
-\dfrac{\partial \mathbf Y_{1,1}}{\partial \mathbf X_{i,j}} & \dfrac{\partial \mathbf Y_{1,2}}{\partial \mathbf X_{i,j}} & \cdots & \dfrac{\partial \mathbf Y_{1,C-1}}{\partial \mathbf X_{i,j}} \\\\
-\dfrac{\partial \mathbf Y_{2,1}}{\partial \mathbf X_{i,j}} & \dfrac{\partial \mathbf Y_{2,2}}{\partial \mathbf X_{i,j}} & \cdots & \dfrac{\partial \mathbf Y_{2,C-1}}{\partial \mathbf X_{i,j}} \\\\
+\dfrac{\partial \mathbf Y_{1,1}}{\partial \mathbf X_{i,j}} & \dfrac{\partial \mathbf Y_{1,2}}{\partial \mathbf X_{i,j}} & \cdots & \dfrac{\partial \mathbf Y_{1,C}}{\partial \mathbf X_{i,j}} \\\\
+\dfrac{\partial \mathbf Y_{2,1}}{\partial \mathbf X_{i,j}} & \dfrac{\partial \mathbf Y_{2,2}}{\partial \mathbf X_{i,j}} & \cdots & \dfrac{\partial \mathbf Y_{2,C}}{\partial \mathbf X_{i,j}} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\dfrac{\partial \mathbf Y_{T-1,1}}{\partial \mathbf X_{i,j}} & \dfrac{\partial \mathbf Y_{T-1,2}}{\partial \mathbf X_{i,j}} & \cdots & \dfrac{\partial \mathbf Y_{T-1,C-1}}{\partial \mathbf X_{i,j}} \\\\
+\dfrac{\partial \mathbf Y_{T,1}}{\partial \mathbf X_{i,j}} & \dfrac{\partial \mathbf Y_{T,2}}{\partial \mathbf X_{i,j}} & \cdots & \dfrac{\partial \mathbf Y_{T,C}}{\partial \mathbf X_{i,j}} \\\\
 \end{bmatrix}
 \end{aligned}
 $$
 
-由于
+又有
 $$\dfrac{\partial \mathbf Y_{m, n}}{\partial \mathbf X_{i,j}}=\dfrac{\partial (\sum \mathbf X_{m,k} \mathbf W_{k,n} + \mathbf B_n)}{\partial \mathbf X_{i,j}} = 
 \begin{cases}
 0 &i\neq m\\\\
 \mathbf W_{j, n} &i=m
 \end{cases}
 $$
-因此
-$$
-\begin{aligned}
-\dfrac{\partial \mathbf Y}{\partial \mathbf X_{i,j}}
-&=
-\begin{bmatrix}
-0 & 0 & \cdots & 0 \\\\
-\vdots & \vdots & \ddots & \vdots \\\\
-\mathbf W_{j, 1} & \mathbf W_{j, 2} & \cdots & \mathbf W_{j, C-1} \\\\
-\vdots & \vdots & \ddots & \vdots \\\\
-0 & 0 & \cdots & 0 \\\\
-\end{bmatrix}
-\end{aligned}
-$$
 
-因此
+根据链式法则有
 
 $$
 \begin{aligned}
-\dfrac{\partial L}{\partial \mathbf Y}\dfrac{\partial \mathbf Y}{\partial \mathbf X_{i,j}}
+\dfrac{\partial L}{\partial \mathbf X_{i,j}}
 &=
-\begin{bmatrix}
-\dfrac{\partial L}{\partial \mathbf Y_{1,1}} & \dfrac{\partial L}{\partial \mathbf Y_{1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{1,C-1}} \\\\
-\dfrac{\partial L}{\partial \mathbf Y_{2,1}} & \dfrac{\partial L}{\partial \mathbf Y_{2,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{2,C-1}} \\\\
-\vdots & \vdots & \ddots & \vdots \\\\
-\dfrac{\partial L}{\partial \mathbf Y_{T-1,1}} & \dfrac{\partial L}{\partial \mathbf Y_{T-1,2}} & \cdots & \dfrac{\partial L}{\partial \mathbf Y_{T-1,C-1}} \\\\
-\end{bmatrix}
-\cdot
-\begin{bmatrix}
-0 & 0 & \cdots & 0 \\\\
-\vdots & \vdots & \ddots & \vdots \\\\
-\mathbf W_{j, 1} & \mathbf W_{j, 2} & \cdots & \mathbf W_{j, C-1} \\\\
-\vdots & \vdots & \ddots & \vdots \\\\
-0 & 0 & \cdots & 0 \\\\
-\end{bmatrix} \\\\
-&= \sum_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{i,k}}\mathbf W_{j, k}
+\sum\limits_{m=1}^T\sum\limits_{n=1}^C\dfrac{\partial L}{\partial \mathbf Y_{m,n}}\dfrac{\partial \mathbf Y_{m,n}}{\partial \mathbf X_{i,j}} \\\\
+&=
+\sum\limits_{n=1}^C\sum\limits_{m=1}^T\dfrac{\partial L}{\partial \mathbf Y_{m,n}}\dfrac{\partial \mathbf Y_{m,n}}{\partial \mathbf X_{i,j}} \\\\
+&=
+\sum\limits_{k=1}^C\sum\limits_{m=1}^T\dfrac{\partial L}{\partial \mathbf Y_{m,k}}\dfrac{\partial \mathbf Y_{m,k}}{\partial \mathbf X_{i,j}} \\\\
+&= \sum_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{i,k}}\mathbf W_{j, k}
 \end{aligned}
 $$
 
@@ -214,10 +191,10 @@ $$
 \dfrac{\partial L}{\partial \mathbf X}
 &=
 \begin{bmatrix}
-\sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{1,k}}\mathbf W_{1, k} & \sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{1,k}}\mathbf W_{2, k} & \cdots & \sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{1,k}}\mathbf W_{C-1, k} \\\\
-\sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{2,k}}\mathbf W_{1, k} & \sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{2,k}}\mathbf W_{2, k} & \cdots & \sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{2,k}}\mathbf W_{C-1, k} \\\\
+\sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{1,k}}\mathbf W_{1, k} & \sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{1,k}}\mathbf W_{2, k} & \cdots & \sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{1,k}}\mathbf W_{C, k} \\\\
+\sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{2,k}}\mathbf W_{1, k} & \sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{2,k}}\mathbf W_{2, k} & \cdots & \sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{2,k}}\mathbf W_{C, k} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{T-1,k}}\mathbf W_{1, k} & \sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{T-1,k}}\mathbf W_{2, k} & \cdots & \sum\limits_{k=1}^{C-1} \dfrac{\partial L}{\partial \mathbf Y_{T-1,k}}\mathbf W_{C-1, k} \\\\
+\sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{T,k}}\mathbf W_{1, k} & \sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{T,k}}\mathbf W_{2, k} & \cdots & \sum\limits_{k=1}^{C} \dfrac{\partial L}{\partial \mathbf Y_{T,k}}\mathbf W_{C, k} \\\\
 \end{bmatrix} \\\\
 &= \dfrac{\partial L}{\partial \mathbf Y} \mathbf W^\top
 \end{aligned}
@@ -231,10 +208,10 @@ $$
 \dfrac{\partial L}{\partial \mathbf W}
 &=
 \begin{bmatrix}
-\sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}}\mathbf X_{k, 1} & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}}\mathbf X_{k, 1} & \cdots & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, C-1}}\mathbf X_{k, 1} \\\\
-\sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}}\mathbf X_{k, 2} & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}}\mathbf X_{k, 2} & \cdots & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, C-1}}\mathbf X_{k, 2} \\\\
+\sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}}\mathbf X_{k, 1} & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}}\mathbf X_{k, 1} & \cdots & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, C}}\mathbf X_{k, 1} \\\\
+\sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}}\mathbf X_{k, 2} & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}}\mathbf X_{k, 2} & \cdots & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, C}}\mathbf X_{k, 2} \\\\
 \vdots & \vdots & \ddots & \vdots \\\\
-\sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}}\mathbf X_{k, C-1} & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}}\mathbf X_{k, C-1} & \cdots & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, C-1}}\mathbf X_{k, C-1} \\\\
+\sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}}\mathbf X_{k, C} & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}}\mathbf X_{k, C} & \cdots & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, C}}\mathbf X_{k, C} \\\\
 \end{bmatrix} \\\\
 &= \mathbf X^\top \dfrac{\partial L}{\partial \mathbf Y}
 \end{aligned}
@@ -249,9 +226,9 @@ $$
 \dfrac{\partial L}{\partial \mathbf B}
 &=
 \begin{bmatrix}
-\sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}} & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}} & \cdots & \sum\limits_{k=1}^{T-1} \dfrac{\partial L}{\partial \mathbf Y_{k, C-1}}
+\sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 1}} & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, 2}} & \cdots & \sum\limits_{k=1}^{T} \dfrac{\partial L}{\partial \mathbf Y_{k, C}}
 \end{bmatrix} \\\\
-&= \mathbf 1_{1\times (T-1)} \dfrac{\partial L}{\partial \mathbf Y}
+&= \mathbf 1_{1\times (T)} \dfrac{\partial L}{\partial \mathbf Y}
 \end{aligned}
 $$
 
