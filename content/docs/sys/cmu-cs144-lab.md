@@ -586,7 +586,7 @@ k=+10:  P(succ|succ)=0.985915   (1 - P(loss|loss))=0.984375
 
 <div style="display: flex; justify-content: center;">
 <div style="width: 49%" align="center">
-<img src="/image/net/cmu-cs144-lab/autocorr_success_given_success.png" width="100%">
+<img src="/image/sys/cmu-cs144-lab/autocorr_success_given_success.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     autocorr_success_given_success
@@ -598,7 +598,7 @@ k=+10:  P(succ|succ)=0.985915   (1 - P(loss|loss))=0.984375
 
 
 <div style="width: 49%" align="center">
-<img src="/image/net/cmu-cs144-lab/autocorr_loss_given_loss.png" width="100%">
+<img src="/image/sys/cmu-cs144-lab/autocorr_loss_given_loss.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     autocorr_loss_given_loss
@@ -610,7 +610,7 @@ k=+10:  P(succ|succ)=0.985915   (1 - P(loss|loss))=0.984375
 
 <div style="display: flex; justify-content: center;">
 <div style="width: 49%" align="center">
-<img src="/image/net/cmu-cs144-lab/rtt_vs_time.png" width="100%">
+<img src="/image/sys/cmu-cs144-lab/rtt_vs_time.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     rtt_vs_time
@@ -622,7 +622,7 @@ k=+10:  P(succ|succ)=0.985915   (1 - P(loss|loss))=0.984375
 
 
 <div style="width: 49%" align="center">
-<img src="/image/net/cmu-cs144-lab/rtt_cdf.png" width="100%">
+<img src="/image/sys/cmu-cs144-lab/rtt_cdf.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     rtt_cdf
@@ -633,7 +633,7 @@ k=+10:  P(succ|succ)=0.985915   (1 - P(loss|loss))=0.984375
 
 <div style="display: flex; justify-content: center;">
 <div style="width: 49%" align="center">
-<img src="/image/net/cmu-cs144-lab/rtt_correlation.png" width="100%">
+<img src="/image/sys/cmu-cs144-lab/rtt_correlation.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     rtt_correlation
@@ -645,7 +645,7 @@ k=+10:  P(succ|succ)=0.985915   (1 - P(loss|loss))=0.984375
 
 
 <div style="width: 49%" align="center">
-<img src="/image/net/cmu-cs144-lab/throughput.png" width="100%">
+<img src="/image/sys/cmu-cs144-lab/throughput.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     throughput

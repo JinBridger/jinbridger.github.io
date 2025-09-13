@@ -35,7 +35,7 @@ Open MPI 与 OpenMP 是不同的概念。
 ## Open MPI 的设计架构
 
 <div align="center">
-	<img src="/image/high-performance-note/openmpi-programming-101/mpi-arch.png" width="100%">
+	<img src="/image/sys/openmpi-programming-101/mpi-arch.png" width="100%">
 </div>
 
 Open MPI 架构如左图所示，主要包括 OMPI, ORTE, OPAL 三层。 OMPI 包括公共的 MPI API 以及后端 MPI 语义以及逻辑。ORTE 不包括 MPI，是一个运行时系统。OPAL 则是 OS 级别的函数调用。
@@ -277,7 +277,7 @@ int main(int argc, char *argv[]) {
 除了点对点通信之外，MPI 还有其他的通信方式如图所示。
 
 <div align="center">
-	<img src="/image/high-performance-note/openmpi-programming-101/collective-comm.png" width="90%">
+	<img src="/image/sys/openmpi-programming-101/collective-comm.png" width="90%">
 </div>
 
 ### 简单的实例：计算质数数量

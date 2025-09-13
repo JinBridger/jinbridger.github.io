@@ -24,7 +24,7 @@ date: 2024-05-22
 
 具体的代码扔到了[这里](https://gist.github.com/JinBridger/82936502c80130fbe1f59fa33e192d08)。只需要添加到任务计划里面定时每隔 10 分钟执行即可。
 <div align="center">
-	<img src="/image/other/earth-wallpaper/wallpaper.png" width="100%">
+	<img src="/image/etc/earth-wallpaper/wallpaper.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     最终的效果。实际上是会随着时间的改变而变化的，这里截取了一张图片作为展示。
@@ -50,7 +50,7 @@ date: 2024-05-22
 
 <div style="display: flex; justify-content: center;">
 <div style="width: 50%" align="center">
-	<img src="/image/other/earth-wallpaper/himawari-original.png" width="100%">
+	<img src="/image/etc/earth-wallpaper/himawari-original.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     原图像。
@@ -58,7 +58,7 @@ date: 2024-05-22
 </div>
 
 <div style="width: 50%" align="center">
-	<img src="/image/other/earth-wallpaper/himawari-correction.png" width="100%">
+	<img src="/image/etc/earth-wallpaper/himawari-correction.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     校正后的图像。

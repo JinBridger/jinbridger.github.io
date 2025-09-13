@@ -17,7 +17,7 @@ date: 2023-01-01
 根据维基百科的描述：卡尔曼滤波（Kalman filter）是一种高效率的递归滤波器（自回归滤波器），它能够从一系列的不完全及包含噪声的测量中，估计动态系统的状态。下面一张图展示了滤波前与滤波后的区别：传感器直接获取的数据是绿色线，真实坐标是红色虚线，而经过卡尔曼滤波之后的数据是蓝线。可见，卡尔曼滤波极大的提高了数据的稳定性，降低了噪声对其的影响。
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/kalman-filter-wave.png" width="50%">
+	<img src="/image/mlai/kalman-filter-and-code/kalman-filter-wave.png" width="50%">
 </div>
 
 ## 卡尔曼滤波的原理
@@ -52,13 +52,13 @@ v_z
 我们并不知道 {{< katex >}}\mathbf{x}{{< /katex >}} 的实际值，卡尔曼滤波假设，{{< katex >}}\mathbf{x}{{< /katex >}}符合二维正态分布，也就是下面这张图：
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/x-distribution.png" width="50%">
+	<img src="/image/mlai/kalman-filter-and-code/x-distribution.png" width="50%">
 </div>
 
 图中，蓝色的深浅表示概率的高低。当然，如果你学过概率论，你可以看出来，这个图里面的位置{{< katex >}}\mathbf{p}{{< /katex >}}与速度{{< katex >}}\mathbf{v}{{< /katex >}}是独立的。而实际上，它们之间应当是有一定的关系的，因为机器人的速度越快，它的位置可能就越远！就像下面这张图一样：
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/x-distribution-nonid.png" width="50%">
+	<img src="/image/mlai/kalman-filter-and-code/x-distribution-nonid.png" width="50%">
 </div>
 
 为了捕获这种相关性的信息，我们就要用到协方差矩阵。在这里，我们采用{{< katex >}}\Sigma_{AB}{{< /katex >}}来表示{{< katex >}}A{{< /katex >}}与{{< katex >}}B{{< /katex >}}的协方差矩阵。我们就可以得到如下的描述：
@@ -88,7 +88,7 @@ __这里的{{< katex >}}\mathbf{x}{{< /katex >}}就是所谓的系统状态矩�
 {{< katex display >}}\mathbf{Ax}_{k}=\mathbf{x}_{k+1}{{< /katex >}}
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/new-state-distribution.png" width="50%">
+	<img src="/image/mlai/kalman-filter-and-code/new-state-distribution.png" width="50%">
 </div>
 
 __{{< katex >}}\mathbf{A}{{< /katex >}}就是所谓的状态转移矩阵。__ 那这个{{< katex >}}\mathbf{A}{{< /katex >}}应当怎么获取呢？
@@ -176,13 +176,13 @@ Cov(\mathbf{A}x) &= \mathbf{A} \Sigma \mathbf{A}^\top
 __在上一小节中，我们认为状态是“点对点”的，也就是像下图左侧描述的一样。但是，如果我们考虑噪声的影响，状态就不是“点对点”的，而是“点对多”的分布。__ 就像下图右侧所表示的一样。
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/noise-effect.png" width="100%">
+	<img src="/image/mlai/kalman-filter-and-code/noise-effect.png" width="100%">
 </div>
 
 这并不会干扰 {{< katex >}}\mathbf{x}_{k+1}{{< /katex >}} 的均值，但是会确确实实影响{{< katex >}}\mathbf{x}_{k+1}{{< /katex >}}的方差。__就像下图所示：虚线是原来的分布，而实线是考虑噪声后的分布。它的中心没有改变，但方差却变大了。__
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/noise-effected.png" width="50%">
+	<img src="/image/mlai/kalman-filter-and-code/noise-effected.png" width="50%">
 </div>
 
 为了描述这一变化，我们使用{{< katex >}}\mathbf{Q}_{k}{{< /katex >}}代表当前时刻外部不确定性，也就是噪声带来的影响。因此我们得到下面的式子：
@@ -201,13 +201,13 @@ __在上一小节中，我们认为状态是“点对点”的，也就是像下
 __假设我们预测{{< katex >}}k{{< /katex >}}时刻的值__，我们计算出了预测值{{< katex >}}\mathbf{x}_{k}{{< /katex >}}，__但是，这与观测值不能直接综合，因为传感器自身有偏差__，因此，我们需要加上一个状态观测矩阵{{< katex >}}\mathbf{H}_{k}{{< /katex >}}，从而计算出我们预测的传感器的测量值。就像下图一样：
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/sensor-noise.png" width="90%">
+	<img src="/image/mlai/kalman-filter-and-code/sensor-noise.png" width="90%">
 </div>
 
 之后，再将这个与传感器测出的数据进行综合，如下图：
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/combine-sensor-and-pred.png" width="90%">
+	<img src="/image/mlai/kalman-filter-and-code/combine-sensor-and-pred.png" width="90%">
 </div>
 
 其中，传感器测得的数据为{{< katex >}}\mathbf{z}_{k}{{< /katex >}}，其协方差矩阵为{{< katex >}}\mathbf{R}{{< /katex >}}。
@@ -216,7 +216,7 @@ __假设我们预测{{< katex >}}k{{< /katex >}}时刻的值__，我们计算出
 
 如下图，假设我们拥有两个正态分布，分别是{{< katex >}}X_1{{< /katex >}}与{{< katex >}}X_2{{< /katex >}}，我们需要综合得出{{< katex >}}X_3{{< /katex >}}
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/two-n-distribution.png" width="70%">
+	<img src="/image/mlai/kalman-filter-and-code/two-n-distribution.png" width="70%">
 </div>
 
 
@@ -267,7 +267,7 @@ K &= \frac{\sigma^2_1}{\sigma^2_1+\sigma^2_2} \\
 现在，回到之前的任务，我们有两个正态分布需要综合。
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/combine-sensor-and-pred.png" width="90%">
+	<img src="/image/mlai/kalman-filter-and-code/combine-sensor-and-pred.png" width="90%">
 </div>
 
 让我们把这两个正态分布写出来：
@@ -318,5 +318,5 @@ __再加上之前的预测公式，就是卡尔曼滤波的所谓黄金五条：
 最后，放一张总的流程图，图中的每一个圆圈都代表黄金五条中的一个式子。
 
 <div align="center">
-	<img src="/image/other/kalman-filter-and-code/all-in-all.png" width="90%">
+	<img src="/image/mlai/kalman-filter-and-code/all-in-all.png" width="90%">
 </div>
