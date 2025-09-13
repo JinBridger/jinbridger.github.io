@@ -66,7 +66,7 @@ ssh username@host "sudo tcpdump -i eth0 -l -w - not port 22" | wireshark -k -i -
 建议设置 `not port 22` 来过滤掉 ssh 连接
 
 <div align="center">
-<img src="/image/net/wireshark-remote/nossh.png" width="40%">
+<img src="/image/etc/wireshark-remote/nossh.png" width="40%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;

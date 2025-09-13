@@ -17,7 +17,7 @@ date: 2024-08-25
 最近把业务尝试迁移到阿里云的函数计算上面，发现用 OSS Python SDK 走内网下载 OSS 上东西的速度不太对。一般在 ECS 上能跑到 100M+ 但是在函数计算上面却只能跑到 4M+
 
 <div align="center">
-	<img src="/image/other/aliyun-oss-crcmod-debug/fc-download-slow.png" width="70%">
+	<img src="/image/etc/aliyun-oss-crcmod-debug/fc-download-slow.png" width="70%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     函数计算走内网下载 OSS 文件速度，只有 4M+
@@ -25,7 +25,7 @@ date: 2024-08-25
 </div>
 
 <div align="center">
-	<img src="/image/other/aliyun-oss-crcmod-debug/ecs-download-fast.png" width="100%">
+	<img src="/image/etc/aliyun-oss-crcmod-debug/ecs-download-fast.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     ECS 走内网下载 OSS 文件速度，可以达到 100M+
@@ -37,7 +37,7 @@ date: 2024-08-25
 首先尝试排查函数计算实例的网络问题。发起请求后点击实例 ID 尝试登入实例中进行排查，在简单安装了一下 wget 以后尝试下载 OSS 的文件，发现速度似乎是对的
 
 <div align="center">
-	<img src="/image/other/aliyun-oss-crcmod-debug/fc-wget.png" width="100%">
+	<img src="/image/etc/aliyun-oss-crcmod-debug/fc-wget.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     函数计算使用 wget 下载 OSS 文件速度，可以达到 30M+
@@ -104,7 +104,7 @@ CMD [ "/root/.local/bin/poetry", "run", "python", "YOUR_CODE" ]
 实验了一下，速度果然正常了
 
 <div align="center">
-	<img src="/image/other/aliyun-oss-crcmod-debug/fc-download-fast.png" width="100%">
+	<img src="/image/etc/aliyun-oss-crcmod-debug/fc-download-fast.png" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     使用带有 C 扩展的 crcmod 以后，速度正常了

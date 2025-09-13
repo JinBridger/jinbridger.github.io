@@ -11,6 +11,6 @@ date: 2024-04-18
 ---
 
 <div align="center">
-	<embed src="/latex/tex-blog-post-text.svg" width=100% style="border: none;position: absolute;">
-    <embed src="/latex/tex-blog-post-image.svg" width=100% style="border: none;">
+	<embed src="/image/etc/tex-blog-post/tex-blog-post-text.svg" width=100% style="border: none;position: absolute;">
+    <embed src="/image/etc/tex-blog-post/tex-blog-post-image.svg" width=100% style="border: none;">
 </div>

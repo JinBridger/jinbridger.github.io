@@ -36,7 +36,7 @@ __点此下载源码：__ {{< button href="/res/openmp-programming-101/src.zip" 
 ### 技术框架
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/omp_stack.png" width="70%">
+	<img src="/image/sys/openmp-programming-101/omp_stack.png" width="70%">
 </div>
 
 <!-- https://www.openmp.org/wp-content/uploads/Intro_To_OpenMP_Mattson.pdf -->
@@ -46,7 +46,7 @@ __点此下载源码：__ {{< button href="/res/openmp-programming-101/src.zip" 
 ### 执行模型：Fork-Join Model
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/omp_fork_join.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/omp_fork_join.png" width="50%">
 </div>
 
 <!-- https://www.openmp.org/wp-content/uploads/ntu-vanderpas.pdf -->
@@ -67,7 +67,7 @@ __点此下载源码：__ {{< button href="/res/openmp-programming-101/src.zip" 
   - CPU在线程之间切换开销较小
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/os_thread.png" width="70%">
+	<img src="/image/sys/openmp-programming-101/os_thread.png" width="70%">
 </div>
 
 - 你可以简单理解，硬件和操作系统会自行将线程调度到CPU核心运行
@@ -77,7 +77,7 @@ __点此下载源码：__ {{< button href="/res/openmp-programming-101/src.zip" 
 ### 硬件内存模型
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/hardware_cache.png" width="70%">
+	<img src="/image/sys/openmp-programming-101/hardware_cache.png" width="70%">
 </div>
 
 - CPU核心在主存之上有 L1, L2, L3 多级缓存
@@ -89,8 +89,8 @@ __点此下载源码：__ {{< button href="/res/openmp-programming-101/src.zip" 
 实际的内存模型更加复杂
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/hardware_zen.png" width="80%">
-	<img src="/image/high-performance-note/openmp-programming-101/hardware_affinity.png" width="80%">
+	<img src="/image/sys/openmp-programming-101/hardware_zen.png" width="80%">
+	<img src="/image/sys/openmp-programming-101/hardware_affinity.png" width="80%">
 </div>
 
 - OpenMP 支持控制线程的绑定
@@ -441,8 +441,8 @@ omp time: 0.0179938
 omp sync time: 7.74378
 ```
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/omp_reduction_op.png" width="80%">
-	<img src="/image/high-performance-note/openmp-programming-101/omp_reduction_op1.png" width="80%">
+	<img src="/image/sys/openmp-programming-101/omp_reduction_op.png" width="80%">
+	<img src="/image/sys/openmp-programming-101/omp_reduction_op1.png" width="80%">
 </div>
 
 - fork 线程并分配任务
@@ -473,25 +473,25 @@ omp sync time: 7.74378
 `#pragma omp barrier`：在特定位置进行栅栏同步
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/sync_barrier.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/sync_barrier.png" width="50%">
 </div>
 
 `#pragma omp single`：某段代码单线程执行，带隐式同步（使用nowait去掉）
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/sync_single.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/sync_single.png" width="50%">
 </div>
 
 `#pragma omp master`：采用主线程执行，无隐式同步
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/sync_master.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/sync_master.png" width="50%">
 </div>
 
 `#pragma omp critical`：某段代码线程互斥执行
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/sync_critical.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/sync_critical.png" width="50%">
 </div>
 
 `#pragma omp atomic`：单个特定格式的语句或语句组中某个变量进行原子操作
@@ -543,7 +543,7 @@ simple omp time: 0.0973124
 false sharing time: 0.129693
 ```
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/false_sharing.jpg" width="50%">
+	<img src="/image/sys/openmp-programming-101/false_sharing.jpg" width="50%">
 </div>
 
 - 耗时增加 24%
@@ -555,7 +555,7 @@ false sharing time: 0.129693
 ### 任务构造
 
 <div align="left">
-	<img src="/image/high-performance-note/openmp-programming-101/more_task.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/more_task.png" width="50%">
 </div>
 
 - 前述的构造都遵循 Fork-Join 模式，对任务类型有限制
@@ -565,7 +565,7 @@ false sharing time: 0.129693
 ### 向量化
 
 <div align="left">
-	<img src="/image/high-performance-note/openmp-programming-101/more_simd.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/more_simd.png" width="50%">
 </div>
 
 - 将循环转换为 SIMD 循环
@@ -584,7 +584,7 @@ false sharing time: 0.129693
 ### GPU支持
 
 <div align="center">
-	<img src="/image/high-performance-note/openmp-programming-101/more_gpu.png" width="50%">
+	<img src="/image/sys/openmp-programming-101/more_gpu.png" width="50%">
 </div>
 
 - 参考[网页](https://www.openmp.org/updates/openmp-accelerator-support-gpus/)

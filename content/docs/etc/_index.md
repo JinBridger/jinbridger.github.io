@@ -1,4 +1,5 @@
 ---
 bookFlatSection: true
-title: "🚀 高性能计算"
+weight: 100
+title: "💡 ETC"
 ---

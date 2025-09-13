@@ -17,7 +17,7 @@ date: 2024-01-01
 让我们把时间拨回上世纪80年代。彼时的主流操作系统当属 MS-DOS。在 Windows 95 以前，DOS 是 IBM PC 以及兼容机中最基本的配备，而 MS-DOS 则算是个人电脑中最普遍使用的 DOS 操作系统。
 
 <div align="center">
-<img src="/image/other/how-gui-work/Msdos-icon.png" width="10%">
+<img src="/image/etc/how-gui-work/Msdos-icon.png" width="10%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -30,7 +30,7 @@ date: 2024-01-01
 彼时的 MS-DOS 的界面大多是黑底白字的命令提示符。为了在屏幕上显示字符，x86提供了一个中断，也就是 INT 10H. 这里的 INT 是 Interrupt 的意思。就像调用其他的中断一样，程序在调用这个中断时向寄存器里面写入参数，然后调用中断指令。对应的，BIOS会建立相应的中断处理程序来将字符打印到屏幕上。
 
 <div align="center">
-<img src="/image/other/how-gui-work/MS-DOS_Deutsch.png" width="80%">
+<img src="/image/etc/how-gui-work/MS-DOS_Deutsch.png" width="80%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -46,7 +46,7 @@ INT 10H的执行速度是相当缓慢的。除了使用 INT 10H 这个中断来�
 以前的计算机一般需要额外安装一张图形卡，从而支持图形输出。图形卡上一般会带有一些内存，也就是VRAM。图形卡的任务就是不断的读取VRAM中的数据，并将读到的数据解析成电信号，通过VGA等显示接口传送给显示器。那么，直接修改VRAM的数据，也可以达到绘制图像的目的，而且这个方法来的更快。
 
 <div align="center">
-<img src="/image/other/how-gui-work/IBM_VGA_graphics_card.jpg" width="80%">
+<img src="/image/etc/how-gui-work/IBM_VGA_graphics_card.jpg" width="80%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -59,7 +59,7 @@ INT 10H的执行速度是相当缓慢的。除了使用 INT 10H 这个中断来�
 但无论如何，对于当时的程序员，都是需要接触系统的最底层，直接跟硬件打交道。不同硬件厂商的图形卡标准页不尽相同，绘制一个窗口都要费劲。
 
 <div align="center">
-<img src="/image/other/how-gui-work/Windows1.0.png" width="60%">
+<img src="/image/etc/how-gui-work/Windows1.0.png" width="60%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -76,7 +76,7 @@ INT 10H的执行速度是相当缓慢的。除了使用 INT 10H 这个中断来�
 可能提到Windows 95，大多数人都会想到开始菜单。确实，开始菜单的出现奠定了此后20多年Windows系统的操作逻辑。但这里讨论的主角既不是Windows 95, 也不是开始菜单。除了开始菜单以外，Windows 95还有一个不太广为人知的核心部件：GDI。
 
 <div align="center">
-<img src="/image/other/how-gui-work/Windows_95_desktop.png" width="80%">
+<img src="/image/etc/how-gui-work/Windows_95_desktop.png" width="80%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -98,7 +98,7 @@ GDI，全称叫做图形设备接口(Graphics Device Interface). 微软在其中
 
 
 <div align="center">
-<img src="/image/other/how-gui-work/jensen_huang.jpg" width="50%">
+<img src="/image/etc/how-gui-work/jensen_huang.jpg" width="50%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -117,7 +117,7 @@ GDI，全称叫做图形设备接口(Graphics Device Interface). 微软在其中
 实际上，DirectX已经超出了GUI的范围。它不仅仅包括图像的渲染，还包括音频，控制器等等组件。但如果谈到GUI，这又是一个绕不开的话题。__因为相较于它的前辈GDI，它实在是快得多。__ DirectX相较于GDI，可以充分的利用GPU的加速，从而以较快的速度绘制美观准确的图像。除了GUI，游戏行业对于这种能力的需求是远超其他任务的。
 
 <div align="center">
-<img src="/image/other/how-gui-work/dx_logo.png" width="50%">
+<img src="/image/etc/how-gui-work/dx_logo.png" width="50%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -128,7 +128,7 @@ GDI，全称叫做图形设备接口(Graphics Device Interface). 微软在其中
 除了游戏行业，DirectX在渲染GUI上也大放异彩。最典型的例子莫过于Windows Vista与Windows 7的Aero特效。通过利用DirectX 9带来的绘图能力，Windows的GUI得以在不牺牲太多速度的同时全面进化。用个不太恰当的比喻，采用了DirectX渲染的Windows的桌面相当于一个大游戏，所有渲染都是GPU完成的。
 
 <div align="center">
-<img src="/image/other/how-gui-work/Aero_Example.png" width="70%">
+<img src="/image/etc/how-gui-work/Aero_Example.png" width="70%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -159,7 +159,7 @@ GDI，全称叫做图形设备接口(Graphics Device Interface). 微软在其中
 先说X Window System. 它主要包括三部分：服务器，客户端与窗口管理器。至于它的工作流程，我这里直接复制知乎@silaoA的文字与配图：
 
 <div align="center">
-<img src="/image/other/how-gui-work/xserver.jpg" width="100%">
+<img src="/image/etc/how-gui-work/xserver.jpg" width="100%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -184,7 +184,7 @@ X Window System 只是一个规范，有很多项目在此之上继续开发，�
 与X Window System相对的就是Wayland. 相对于X Window System, 它只有两个部件：客户端与合成器。工作流程这里同样引用知乎@silaoA的文字与配图：
 
 <div align="center">
-<img src="/image/other/how-gui-work/wayland.jpg" width="100%">
+<img src="/image/etc/how-gui-work/wayland.jpg" width="100%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;

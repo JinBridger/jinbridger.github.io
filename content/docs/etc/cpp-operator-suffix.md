@@ -17,10 +17,10 @@ date: 2024-09-10
 在群里看见这样一段代码：
 
 <div align="center">
-	<img src="/image/other/cpp-operator-suffix/a.png" width="80%">
+	<img src="/image/etc/cpp-operator-suffix/a.png" width="80%">
 </div>
 <div align="center">
-	<img src="/image/other/cpp-operator-suffix/b.png" width="80%">
+	<img src="/image/etc/cpp-operator-suffix/b.png" width="80%">
 </div>
 
 里面有一句代码很神奇: `1.0_kmphps`. `0.1_kmphps` 的 `_kmphps` 是一个后缀运算符，
