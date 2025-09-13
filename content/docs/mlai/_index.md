@@ -1,4 +1,5 @@
 ---
 bookFlatSection: true
-title: "💡 其他"
+weight: 10
+title: "🎓 MLAI"
 ---

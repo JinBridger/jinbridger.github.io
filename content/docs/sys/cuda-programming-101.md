@@ -23,7 +23,7 @@ date: 2023-01-01
 - 软件环境
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/compare.png" width="80%">
+	<img src="/image/sys/cuda-programming-101/compare.png" width="80%">
 </div>
 
 相较于 CPU 来说，GPU 核心数量更多一些，能够容纳的线程数更多一些。更加适合并行的计算。
@@ -57,7 +57,7 @@ __global__ void vecAdd(double *a, double *b, double *c, int n) {
 实际上，在给 GPU 编程时，我们会给上千个 Core 分配上万个 Thread, 也就是说，一个 Core 上会有十来个 Thread. 每当有一个 Thread 的数据可用，那么对应的 Thread 就会被唤醒。
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/why-fast.jpg" width="80%">
+	<img src="/image/sys/cuda-programming-101/why-fast.jpg" width="80%">
 </div>
 
 比如说上面这张图，假设 GPU 的调度器是以 16 个 Core 为单位，那么在 Cycle 1 时，调度器发现 Thread 0-15 的数据可用，就会一次性执行加法操作，在 Cycle 2 时又发现 Thread 16-31 的数据可用，那么就会一次性执行加法操作。以此类推。
@@ -69,7 +69,7 @@ __global__ void vecAdd(double *a, double *b, double *c, int n) {
 CUDA 提供了一个层级化的接口，每一个 Kernel 对应一个 Grid。如图所示：
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/cuda-interface.png" width="50%">
+	<img src="/image/sys/cuda-programming-101/cuda-interface.png" width="50%">
 </div>
 
 每一个 Grid 都有很多个 Block，Block 的编号可以是一维的或者多维的。图中的 Block 编号就是二维的。每个 Block 中又会有若干个 Thread. 同样的，Thread 的编号也可以是一维的或者多维的。
@@ -77,7 +77,7 @@ CUDA 提供了一个层级化的接口，每一个 Kernel 对应一个 Grid。�
 下面这张图就是一维的 Block 与 Thread。
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/idx.png" width="100%">
+	<img src="/image/sys/cuda-programming-101/idx.png" width="100%">
 </div>
 
 通过这张图，不难理解之前的 a+b 问题中的 `int id = blockIdx.x * blockDim.x + threadIdx.x;` 是如何得来的了。
@@ -85,7 +85,7 @@ CUDA 提供了一个层级化的接口，每一个 Kernel 对应一个 Grid。�
 __值得一提的是，Block 与 Thread 都是并行执行的。单个 Kernel 只有一个 Grid.__
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/automatic-scalability.png" width="50%">
+	<img src="/image/sys/cuda-programming-101/automatic-scalability.png" width="50%">
 </div>
 
 硬件上，Block 会映射到 SM(Streaming Multiprocessor) 上面，多个 Block 会映射到一个 SM 上。而在工作时，SM 会优先处理可用的 Block，比如说 Block 0 处理完毕后，对应的 SM 会去处理 Block 2，从而加速运算。而在每个 Block 里面，多个 Thread 也会映射到同一个 Core 上。
@@ -97,7 +97,7 @@ __除此以外，CPU 的上下文切换需要弹栈重置寄存器，而 GPU 的
 GPU 作为 SIMT(Single Instruction Multiple Threads) 体系结构，在执行 if...else 语句时有时会产生意想不到的问题。
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/ifelse.png" width="80%">
+	<img src="/image/sys/cuda-programming-101/ifelse.png" width="80%">
 </div>
 
 如上图所示，GPU 在执行 if...else 分支时，由于 if 与 else 分支的指令不同，所以必须分两次执行 if 与 else，也就是说变成了串行结构，__在这种情况下，总的延迟=if分支延迟+else分支延迟+判断延迟__。因此，一般来说，应当尽量减少 if...else 的使用。
@@ -113,7 +113,7 @@ __另一种是仅 if 分支__，同样的，编译器也对此进行了优化。
 ## CPU 与 GPU 的通信
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/interaction.png" width="90%">
+	<img src="/image/sys/cuda-programming-101/interaction.png" width="90%">
 </div>
 
 如图，__GPU 上面启动 Kernel 不会妨碍 CPU 指令的运行__。在执行完 CPU 部分等待 GPU 时，需要调用 `cudaDeviceSynchronize()` 等待回调。
@@ -121,7 +121,7 @@ __另一种是仅 if 分支__，同样的，编译器也对此进行了优化。
 ## GPU 显存架构
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/memarch.png" width="90%">
+	<img src="/image/sys/cuda-programming-101/memarch.png" width="90%">
 </div>
 
 以 NVIDIA A100 GPU 为例，GPU 存储器也遵循金字塔原则。值得注意的是，Shared Memory 与 L1 缓存是共用 192 KiB 空间的。
@@ -133,7 +133,7 @@ __另一种是仅 if 分支__，同样的，编译器也对此进行了优化。
 根据刚才的架构图，可以看出 Shared Memory 是与 L1 缓存共用空间的。每个 Block 都有自己独立控制的 Shared Memory，所有 Block 中的 Thread 均可以访问。它具有较高的速度与较低的延迟，但是却有可能会造成冲突问题。
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/banks.png" width="50%">
+	<img src="/image/sys/cuda-programming-101/banks.png" width="50%">
 </div>
 
 上图中，左右两侧的情况都没有冲突，每个 Thread 均访问一个 Bank。而中间的则出现了冲突，例如 Thread 0 与 16 均访问 Bank 0，这就导致了冲突。一个 Bank 在一个时钟周期内传输的数据量是有限的，因此整个程序就会被拖慢。
@@ -158,7 +158,7 @@ __另一种是仅 if 分支__，同样的，编译器也对此进行了优化。
 一般情况下，GPU 计算，CPU 计算，CPU 与 GPU 数据传输是可以同时进行的。如下图所示：
 
 <div align="center">
-	<img src="/image/high-performance-note/cuda-programming-101/manage.png" width="80%">
+	<img src="/image/sys/cuda-programming-101/manage.png" width="80%">
 </div>
 
 可以使用 `cudaMallocHost`, `cudaFreeHost`, `cudaMemcpyAsync` 以及 CUDA Stream 等 API 实现。

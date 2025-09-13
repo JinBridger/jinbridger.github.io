@@ -28,7 +28,7 @@ date: 2025-08-15
 网上找到了两幅示意图, 用来描述 MapReduce 算法的过程.
 
 <div align="center">
-<img src="/image/other/mit-65840-lab/map.webp" width="100%">
+<img src="/image/sys/mit-65840-lab/map.webp" width="100%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -41,7 +41,7 @@ date: 2025-08-15
 Map 阶段的目的是将原始输入分成键值对, 并且分到一个类似哈希表的结构中 (Reducer 的数量就对应哈希表的桶的数量), 确保同样的 Key 分到同样的桶中 (这一步也叫做 Partition).
 
 <div align="center">
-<img src="/image/other/mit-65840-lab/reduce.webp" width="100%">
+<img src="/image/sys/mit-65840-lab/reduce.webp" width="100%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
