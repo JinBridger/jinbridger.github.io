@@ -30,7 +30,7 @@ GPT-2 模型主要的结构由三部分组成：
 
 
 <div align="center">
-<img src="/image/mlai/analyze-llm-c-part-1/GPT-2-overview.svg" width="100%">
+<img id="overview_auto_svg" src="/image/mlai/analyze-llm-c-part-1/GPT-2-overview.svg" width="100%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -60,7 +60,7 @@ GPT-2 模型主要的结构由三部分组成：
 最后将词嵌入得到的向量与位置嵌入得到的向量相加就可以得到最后的向量。对每个向量都这样做，就可以得到嵌入完成的矩阵。
 
 <div align="center">
-<img src="/image/mlai/analyze-llm-c-part-1/embedding.svg" width="100%">
+<img id="embedding_auto_svg" src="/image/mlai/analyze-llm-c-part-1/embedding.svg" width="100%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -77,7 +77,7 @@ GPT-2 模型主要的结构由三部分组成：
 层归一化就是对上一层输入的矩阵中的每个向量进行归一化并乘以 weight $\gamma$ 和 bias $\beta$
 
 <div align="center">
-<img src="/image/mlai/analyze-llm-c-part-1/layer-norm.svg" width="90%">
+<img id="layer-norm_auto_svg" src="/image/mlai/analyze-llm-c-part-1/layer-norm.svg" width="90%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -93,7 +93,7 @@ GPT-2 的自注意力层并没有掩码, 这一点跟一些 LLM 不太一样。�
 最后还要把输出的矩阵再做一次线性的投射，投射到隐藏层的维度上面。
 
 <div align="center">
-<img src="/image/mlai/analyze-llm-c-part-1/attention.svg" width="90%">
+<img id="attention_auto_svg" src="/image/mlai/analyze-llm-c-part-1/attention.svg" width="90%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -110,7 +110,7 @@ GPT-2 的自注意力层并没有掩码, 这一点跟一些 LLM 不太一样。�
 在自注意力层与前馈网络之间还有一个层归一化，上面已经提到过不再赘述。
 
 <div align="center">
-<img src="/image/mlai/analyze-llm-c-part-1/feed-forward.svg" width="90%">
+<img id="feed-forward_auto_svg" src="/image/mlai/analyze-llm-c-part-1/feed-forward.svg" width="90%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -131,7 +131,7 @@ GPT-2 的自注意力层并没有掩码, 这一点跟一些 LLM 不太一样。�
 线性层的功能是将隐藏层投射回 Vocab 大小。注意到线性层之前还有一个 Layer Norm 层，上面已经提到过不再赘述。最后将线性层的输出的每一行做 Softmax 就可以得到最终的输出概率。
 
 <div align="center">
-<img src="/image/mlai/analyze-llm-c-part-1/output.svg" width="70%">
+<img id="output_auto_svg" src="/image/mlai/analyze-llm-c-part-1/output.svg" width="70%">
     <br>
     <div style="border-bottom: 1px solid #d9d9d9;
     display: inline-block;

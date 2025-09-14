@@ -10,6 +10,11 @@ date: 2024-10-30
 {{< hint info >}}
 **欢迎来到我的博客！🥰**
 
-[![GitHub](https://img.shields.io/badge/GitHub-JinBridger-cornflowerblue.svg)](https://github.com/JinBridger)
-[![Mail](https://img.shields.io/badge/Mail-qjin25@stu.pku.edu.cn-steelblue.svg)](mailto:qjin25@stu.pku.edu.cn)
+<a href="https://github.com/JinBridger">
+<img id="gh-badge_auto_svg" src="/image/main-page/gh-badge.svg">
+</a>
+<a href="mailto:qjin25@stu.pku.edu.cn">
+<img id="mail-badge_auto_svg" src="/image/main-page/mail-badge.svg">
+</a>
+
 {{< /hint >}}

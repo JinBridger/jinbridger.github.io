@@ -9,3 +9,15 @@
     @import "../syntax-dark";
   }
 }
+
+/* 强制浅色 */
+html[data-theme="light"] {
+  @include theme-light;
+  @import "../syntax-light";
+}
+
+/* 强制深色 */
+html[data-theme="dark"] {
+  @include theme-dark;
+  @import "../syntax-dark";
+}

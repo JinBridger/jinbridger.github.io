@@ -81,7 +81,7 @@ $$D_\text{KL}(P\parallel Q) = H(P, Q) - H(X) = -\sum_{i=1}^n p(x_i)\log \frac{q(
 我们可以用文氏图来表示两个不独立的随机变量的信息熵. 图中面积代表信息熵的大小, 蓝色椭圆的面积代表 $X$ 的信息熵, 也就是 $H(X)$, 同理, 红色椭圆的面积代表 $H(Y)$. 由于两个变量不独立, 因此两个椭圆必然有重叠. 重叠的面积就是 $X$ 与 $Y$ 重叠的信息量, 也就是互信息, 用 $I(X;Y)$ 表示:
 
 <div align="center">
-	<img src="/image/mlai/information-theory-basic/entropy.svg" width="50%">
+	<img id="entropy_auto_svg" src="/image/mlai/information-theory-basic/entropy.svg" width="50%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     用 Venn 图表示两个不独立的随机变量的信息熵.
