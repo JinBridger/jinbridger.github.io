@@ -22,8 +22,9 @@ date: 2025-09-07
 
 如果下游任务做的是分类/检索/聚类型的任务, 那一般对比学习训练的效果会更好. 但如果是生成/理解型的任务, 那么一般掩码预测会更好.
 
+
 <div align="center">
-	<img src="/image/mlai/represent-learning-and-infonce/contrastive_repr.svg" width="100%">
+	<img id="contrastive_repr_auto_svg" src="/image/mlai/represent-learning-and-infonce/contrastive_repr.svg" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     论文的图 1
@@ -80,7 +81,7 @@ $$\mathcal L_\text N = -\log \frac{f_k(x_{t+k}, c_t)}{\sum_{x_j \in X} f_k(x_j, 
 ### 视觉任务
 
 <div align="center">
-	<img src="/image/mlai/represent-learning-and-infonce/contrastive_vision.svg" width="100%">
+	<img id="contrastive_vision_auto_svg"  src="/image/mlai/represent-learning-and-infonce/contrastive_vision.svg" width="100%">
     <br>
     <div style="display: inline-block; color: #999; padding: 2px;">
     对比学习应用在视觉任务

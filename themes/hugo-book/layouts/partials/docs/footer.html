@@ -2,6 +2,63 @@
 {{ with $script.Content }}
   <script>{{ . | safeJS }}</script>
 
+<script>
+  function setGiscusTheme(theme) {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    iframe.contentWindow.postMessage(
+      {
+        giscus: {
+          setConfig: {
+            theme: theme
+          }
+        }
+      },
+      'https://giscus.app'
+    );
+  }
+
+  function setSvgTheme(theme) {
+    const imgs = document.querySelectorAll('img[id$="auto_svg"]');
+
+    imgs.forEach(img => {
+      if (!img.dataset.baseSrc) {
+        // 第一次调用时保存初始 src
+        // 去掉可能已有的 -dark/-light 后缀
+        img.dataset.baseSrc = img.src.replace(/-(dark|light)(?=\.svg$)/, '');
+      }
+
+      // 拼接新路径
+      const newSrc = img.dataset.baseSrc.replace(/\.svg$/, `-${theme}.svg`);
+      img.src = newSrc;
+    });
+  }
+
+  function toggleTheme() {
+    let current = document.documentElement.getAttribute("data-theme");
+    let newTheme;
+    if (current === "dark") {
+      newTheme = "light";
+    } else {
+      newTheme = "dark";
+    }
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+    updateButton(newTheme === "dark");
+
+    setGiscusTheme(newTheme);
+    setSvgTheme(newTheme);
+  }
+
+  const theme = localStorage.getItem("theme");
+  if (theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    setSvgTheme(theme);
+  }
+
+  updateButton(theme === "dark");
+</script>
+
 <script src="https://giscus.app/client.js"
   data-repo="JinBridger/site-blog-comments"
   data-repo-id="R_kgDOLMiN3w"
@@ -18,4 +75,5 @@
   crossorigin="anonymous"
   async>
 </script>
+
 {{ end }}

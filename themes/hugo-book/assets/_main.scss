@@ -201,6 +201,8 @@ body[dir="rtl"] .book-menu {
     background: var(--gray-100);
     color: var(--body-font-color);
 
+    outline: 1px solid var(--outline);
+
     &:required + .book-search-spinner {
       display: block;
     }
