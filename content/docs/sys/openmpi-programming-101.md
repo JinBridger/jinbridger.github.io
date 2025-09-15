@@ -10,9 +10,8 @@ date: 2023-01-01
 # bookSearchExclude: false
 ---
 
-{{< hint info >}}
-本文为北大未名超算队高性能计算入门讲座（三）笔记。[讲座录屏地址](https://www.bilibili.com/video/BV13v4y1v7y7)
-{{< /hint >}}
+> [!NOTE]
+> 本文为北大未名超算队高性能计算入门讲座（三）笔记。[讲座录屏地址](https://www.bilibili.com/video/BV13v4y1v7y7)
 
 # Open MPI 入门笔记
 
@@ -28,9 +27,8 @@ MPICH 实现的比较全面，但是不支持 InfiniBand 这种比较新的硬�
 
 Open MPI 也实现了 MPI 标准，并且应用广泛。它的进程管理比 MPICH 相对比较好。
 
-{{< hint warning >}}
-Open MPI 与 OpenMP 是不同的概念。
-{{< /hint >}}
+> [!IMPORTANT]
+> Open MPI 与 OpenMP 是不同的概念。
 
 ## Open MPI 的设计架构
 

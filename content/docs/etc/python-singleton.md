@@ -58,11 +58,10 @@ True
 
 虽然是单例，但是却调用了两次 `__init__` 方法！
 
-{{< hint info >}}
-根据 [Python 官方文档](https://docs.python.org/3/reference/datamodel.html#object.__new__)的描述, 除非 `__new__` 方法不返回实例, 否则会调用 `__init__` 方法进行初始化.
-
-> If `__new__()` is invoked during object construction and it returns an instance of *cls*, then the new instance’s `__init__()` method will be invoked like `__init__(self[, ...])`, where *self* is the new instance and the remaining arguments are the same as were passed to the object constructor.
-{{< /hint >}}
+> [!NOTE]
+> 根据 [Python 官方文档](https://docs.python.org/3/reference/datamodel.html#object.__new__)的描述, 除非 `__new__` 方法不返回实例, 否则会调用 `__init__` 方法进行初始化.
+> 
+> > If `__new__()` is invoked during object construction and it returns an instance of *cls*, then the new instance’s `__init__()` method will be invoked like `__init__(self[, ...])`, where *self* is the new instance and the remaining arguments are the same as were passed to the object constructor.
 
 ## 正确实现单例模式
 

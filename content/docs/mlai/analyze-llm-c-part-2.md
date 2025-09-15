@@ -12,15 +12,13 @@ date: 2025-01-07
 
 # llm.c 源码解析 - 反向传播
 
-{{< hint info >}}
-建议阅读本文前先阅读前文 [llm.c 源码解析 - GPT-2 结构](../analyze-llm-c-part-1)
-{{< /hint >}}
+> [!IMPORTANT]
+> 建议阅读本文前先阅读前文 [llm.c 源码解析 - GPT-2 结构](../analyze-llm-c-part-1)
 
 llm.c 是一个开源的用 Cuda 与 C 写成的简易 LLM 推理框架，用大约 1700 行代码完成了对于 GPT-2 模型的训练以及推理。
 
-{{< hint info >}}
-本文中的下标字母可能会有点奇怪，这是为了与 llm.c 中的循环变量保持一致。
-{{< /hint >}}
+> [!TIP]
+> 本文中的下标字母可能会有点奇怪，这是为了与 llm.c 中的循环变量保持一致。
 
 ## Softmax 层反向传播
 
