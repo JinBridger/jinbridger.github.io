@@ -10,9 +10,8 @@ date: 2023-01-01
 # bookSearchExclude: false
 ---
 
-{{< hint info >}}
-本文为北大未名超算队高性能计算入门讲座（二）笔记。[讲座录屏地址](https://www.bilibili.com/video/BV1424y1i7xe)
-{{< /hint >}}
+> [!NOTE]
+> 本文为北大未名超算队高性能计算入门讲座（二）笔记。[讲座录屏地址](https://www.bilibili.com/video/BV1424y1i7xe)
 
 # CUDA 入门笔记
 
@@ -199,10 +198,9 @@ void compute() {
 ```
 {{< /details >}}
 
-{{< hint info >}}
-**变慢的原因**  
-开了 atomic 导致 40 个 Thread 竞争同一个操作。
-{{< /hint >}}
+> [!TIP]
+> **变慢的原因**  
+> 开了 atomic 导致 40 个 Thread 竞争同一个操作。
 
 ### CPU 并行改进版 - 200ms
 {{< details "Code" close >}}
@@ -225,10 +223,9 @@ void compute() {
 ```
 {{< /details >}}
 
-{{< hint info >}}
-**优化有限的原因**  
-局部化不够是优化有限的原因。在这段代码中，每个 Thread 所取的两个数据之间都隔了 40 个数据，也就意味着每次访问内存获取到的数据都要被丢弃大半部分。
-{{< /hint >}}
+> [!TIP]
+> **优化有限的原因**  
+> 局部化不够是优化有限的原因。在这段代码中，每个 Thread 所取的两个数据之间都隔了 40 个数据，也就意味着每次访问内存获取到的数据都要被丢弃大半部分。
 
 ### CPU 并行局部化改进版 - 45ms
 {{< details "Code" close >}}
@@ -295,10 +292,9 @@ void compute() {
 ```
 {{< /details >}}
 
-{{< hint info >}}
-**优化有限的原因**  
-循环展开后没有消除掉在 Global Memory 中进行 atomic 操作带来的竞争问题。
-{{< /hint >}}
+> [!TIP]
+> **优化有限的原因**  
+> 循环展开后没有消除掉在 Global Memory 中进行 atomic 操作带来的竞争问题。
 
 ### GPU 使用 Shared Memory 与循环展开 - 9ms
 
@@ -363,7 +359,6 @@ void compute() {
 ```
 {{< /details >}}
 
-{{< hint info >}}
-**优化的原因**  
-减少了在 Global Memory 中进行 atomic 操作的次数。
-{{< /hint >}}
+> [!TIP]
+> **优化的原因**  
+> 减少了在 Global Memory 中进行 atomic 操作的次数。

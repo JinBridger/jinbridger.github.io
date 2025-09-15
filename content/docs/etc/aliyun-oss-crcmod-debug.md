@@ -48,15 +48,14 @@ date: 2024-08-25
 
 翻了一下阿里云的 Python OSS SDK 安装指南，发现了这样一句话:
 
-{{< hint info >}}
-**安装 `python-devel`**
-
-完成环境准备后，您需要先要安装 python-devel 包。
-
-**说明**
-
-OSS Python SDK 需要 crcmod 计算 CRC 校验码，而 crcmod 依赖 python-devel 包中的 Python.h 文件。如果系统缺少 Python.h 文件，虽然之后安装 OSS Python SDK 不会失败，但 crcmod 的 C 扩展模式安装会失败。如果 crcmod 的 C 扩展模式安装失败，在上传、下载计算 CRC 校验码时会使用纯 Python 模式进行 CRC 数据校验。纯 Python 模式的性能远差于 C 扩展模式，从而导致上传、下载等操作效率非常低下。
-{{< /hint >}}
+> [!NOTE]
+> **安装 `python-devel`**
+> 
+> 完成环境准备后，您需要先要安装 python-devel 包。
+> 
+> **说明**
+> 
+> OSS Python SDK 需要 crcmod 计算 CRC 校验码，而 crcmod 依赖 python-devel 包中的 Python.h 文件。如果系统缺少 Python.h 文件，虽然之后安装 OSS Python SDK 不会失败，但 crcmod 的 C 扩展模式安装会失败。如果 crcmod 的 C 扩展模式安装失败，在上传、下载计算 CRC 校验码时会使用纯 Python 模式进行 CRC 数据校验。纯 Python 模式的性能远差于 C 扩展模式，从而导致上传、下载等操作效率非常低下。
 
 感觉大概率是这个 crcmod 的问题。注意到 Python 官方提供的容器里面并没有 gcc 这种编译器，自然也无法编译生成 C 扩展。
 

@@ -10,11 +10,10 @@ date: 2023-01-01
 # bookSearchExclude: false
 ---
 
-{{< hint info >}}
-本文为北大未名超算队高性能计算入门讲座（四）笔记。[讲座录屏地址](https://www.bilibili.com/video/BV18M41187ZU)
-
-__作者：__ 北京大学元培学院 王瑞诚
-{{< /hint >}}
+> [!NOTE]
+> 本文为北大未名超算队高性能计算入门讲座（四）笔记。[讲座录屏地址](https://www.bilibili.com/video/BV18M41187ZU)
+>
+> __作者：__ 北京大学元培学院 王瑞诚
 
 __点此下载源码：__ {{< button href="/res/openmp-programming-101/src.zip" >}}下载源码{{< /button >}}
 
