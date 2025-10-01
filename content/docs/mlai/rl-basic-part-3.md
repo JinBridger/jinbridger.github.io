@@ -10,6 +10,14 @@ date: 2025-09-18
 # bookSearchExclude: false
 ---
 
+> [!INFO]
+> 本文为强化学习入门笔记的其中一部分, 其他笔记参见:
+> 1. [强化学习入门 - 基础定义]({{< ref "/docs/mlai/rl-basic-part-1" >}})
+> 2. [强化学习入门 - 表格型策略]({{< ref "/docs/mlai/rl-basic-part-2" >}})
+> 3. [强化学习入门 - 参数化策略]({{< ref "/docs/mlai/rl-basic-part-3" >}})
+> 4. [强化学习入门 - DQN]({{< ref "/docs/mlai/rl-basic-part-4" >}})
+
+
 # 强化学习入门: 参数化策略
 
 这一部分讨论一下比较复杂的一种策略, 也是最常用的一种策略: 参数化策略.
