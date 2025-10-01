@@ -10,6 +10,14 @@ date: 2025-09-20
 # bookSearchExclude: false
 ---
 
+> [!INFO]
+> 本文为强化学习入门笔记的其中一部分, 其他笔记参见:
+> 1. [强化学习入门 - 基础定义]({{< ref "/docs/mlai/rl-basic-part-1" >}})
+> 2. [强化学习入门 - 表格型策略]({{< ref "/docs/mlai/rl-basic-part-2" >}})
+> 3. [强化学习入门 - 参数化策略]({{< ref "/docs/mlai/rl-basic-part-3" >}})
+> 4. [强化学习入门 - DQN]({{< ref "/docs/mlai/rl-basic-part-4" >}})
+
+
 # 强化学习入门: DQN
 
 这一部分讲一下 DQN 算法. DQN 算法是一种值函数方法.
